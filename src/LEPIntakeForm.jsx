@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { db, collection, addDoc } from "../firebase";
+import { db } from "./firebase";
+import { collection, addDoc } from "firebase/firestore";
 
 const LEPIntakeForm = () => {
   const [formData, setFormData] = useState({
@@ -32,16 +33,26 @@ const LEPIntakeForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const docRef = await addDoc(collection(db, "responses"), formData);
-      console.log("Document written with ID: ", docRef.id);
-      alert("Form submitted!");
-    } catch (error) {
-      console.error("Error adding document: ", error);
-      alert("Error submitting form. Check console.");
-    }
-  };
 
+    try {
+        // Store data in Firestore
+        const docRef = await addDoc(collection(db, "responses"), formData);
+        console.log("Document written with ID: ", docRef.id);
+
+        // Send data to AI analysis
+        const response = await fetch("/api/analyze", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ responses: formData }),
+        });
+
+        const data = await response.json();
+        alert(`AI Analysis: ${data.analysis}`); // Display insights to user
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Error processing AI analysis.");
+    }
+};
   return (
     <div className="container mt-5 p-4 bg-light shadow rounded">
       <h2 className="text-center mb-3">Leadership Intake Form</h2>
