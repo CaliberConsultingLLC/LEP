@@ -1,3 +1,9 @@
+import OpenAI from "openai";
+
+const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY, // Make sure your API key is set in Vercel
+});
+
 const response = await openai.chat.completions.create({
     model: "gpt-4",
     max_tokens: 200, // Reduce output length to prevent long response times
