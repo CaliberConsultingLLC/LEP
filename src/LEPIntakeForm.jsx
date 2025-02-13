@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { db, collection, addDoc } from "../firebase";
 
 const LEPIntakeForm = () => {
   const [formData, setFormData] = useState({
@@ -29,10 +30,16 @@ const LEPIntakeForm = () => {
     setFormData((prev) => ({ ...prev, leadershipPriorities: options }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form Data Submitted:", formData);
-    alert("Form submitted! Check the console for data.");
+    try {
+      const docRef = await addDoc(collection(db, "responses"), formData);
+      console.log("Document written with ID: ", docRef.id);
+      alert("Form submitted!");
+    } catch (error) {
+      console.error("Error adding document: ", error);
+      alert("Error submitting form. Check console.");
+    }
   };
 
   return (
