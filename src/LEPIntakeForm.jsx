@@ -33,26 +33,26 @@ const LEPIntakeForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    
+    console.log("Submitting form:", formData); // Debugging log
+  
     try {
-        // Store data in Firestore
-        const docRef = await addDoc(collection(db, "responses"), formData);
-        console.log("Document written with ID: ", docRef.id);
-
-        // Send data to AI analysis
-        const response = await fetch("/api/analyze", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ responses: formData }),
-        });
-
-        const data = await response.json();
-        alert(`AI Analysis: ${data.analysis}`); // Display insights to user
+      const response = await fetch("/api/analyze-leadership", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+  
+      const result = await response.json();
+      console.log("AI Analysis Result:", result);
+      alert("Analysis Complete! Check console for results.");
     } catch (error) {
-        console.error("Error:", error);
-        alert("Error processing AI analysis.");
+      console.error("Error submitting form:", error);
+      alert("There was an issue submitting the form.");
     }
-};
+  };
   return (
     <div className="container mt-5 p-4 bg-light shadow rounded">
       <h2 className="text-center mb-3">Leadership Intake Form</h2>
