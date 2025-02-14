@@ -118,8 +118,20 @@ const LEPIntakeForm = () => {
   const [currentSection, setCurrentSection] = useState(0);
 
   // Initialize rankings in state
-  const [teamNeeds, setTeamNeeds] = useState(["Clarity", "Support", "Direction", "Flexibility", "Encouragement"]);
-  const [confidenceRanking, setConfidenceRanking] = useState(["Decision-making", "Adaptability", "Conflict resolution"]);
+  const [teamNeeds, setTeamNeeds] = useState([
+    { id: "clarity", text: "Clarity" },
+    { id: "support", text: "Support" },
+    { id: "direction", text: "Direction" },
+    { id: "flexibility", text: "Flexibility" },
+    { id: "encouragement", text: "Encouragement" }
+  ]);
+  
+  const [confidenceRanking, setConfidenceRanking] = useState([
+    { id: "decision", text: "Decision-making" },
+    { id: "adaptability", text: "Adaptability" },
+    { id: "conflict", text: "Conflict resolution" }
+  ]);
+ 
 
   const handleChange = (id, value) => {
     setFormData((prev) => ({ ...prev, [id]: value }));
@@ -128,19 +140,17 @@ const LEPIntakeForm = () => {
   // Drag handler for rankings
   const handleDragEnd = (event, id) => {
     const { active, over } = event;
-  
     if (!over || active.id === over.id) return;
   
     setFormData((prev) => {
-      const oldIndex = prev[id].findIndex((item) => item.id === active.id);
-      const newIndex = prev[id].findIndex((item) => item.id === over.id);
+      const currentList = prev[id] || sections.find(s => s.questions.some(q => q.id === id))?.questions.find(q => q.id === id)?.options || [];
+      const oldIndex = currentList.findIndex((item) => item.id === active.id);
+      const newIndex = currentList.findIndex((item) => item.id === over.id);
   
       if (oldIndex === -1 || newIndex === -1) return prev;
   
-      return {
-        ...prev,
-        [id]: arrayMove(prev[id], oldIndex, newIndex),
-      };
+      const newOrder = arrayMove(currentList, oldIndex, newIndex);
+      return { ...prev, [id]: newOrder };
     });
   };
 
@@ -174,11 +184,11 @@ const LEPIntakeForm = () => {
             <label className="form-label">{q.prompt}</label>
 
             {q.type === "ranking" ? (
-  <DndContext collisionDetection={closestCenter} onDragEnd={(event) => handleRankingChange(q.id, event)}>
+  <DndContext collisionDetection={closestCenter} onDragEnd={(event) => handleDragEnd(event, q.id)}>
     <SortableContext items={formData[q.id] || q.options} strategy={verticalListSortingStrategy}>
-      {(formData[q.id] || q.options).map((item, index) => (
-        <SortableItem key={item} id={item}>
-          <div className="list-group-item p-2 border rounded">{index + 1}. {item}</div>
+      {(formData[q.id] || q.options).map((item) => (
+        <SortableItem key={item.id} id={item.id}>
+          <div className="list-group-item">{item.text}</div>
         </SortableItem>
       ))}
     </SortableContext>
