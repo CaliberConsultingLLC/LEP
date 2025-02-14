@@ -152,15 +152,16 @@ const LEPIntakeForm = () => {
   };
 
   const handleNext = () => {
-    const totalQuestions = sections[currentSection].questions.length;
-    if (currentQuestion < totalQuestions - 1) {
-      setCurrentQuestion(currentQuestion + 1);
-    } else {
-      setCurrentQuestion(0);
-      setCurrentSection(currentSection + 1);
+    if (sections[currentSection]) {
+      const totalQuestions = sections[currentSection].questions.length;
+      if (currentQuestion < totalQuestions - 1) {
+        setCurrentQuestion(currentQuestion + 1);
+      } else if (currentSection < sections.length - 1) {
+        setCurrentQuestion(0);
+        setCurrentSection(currentSection + 1);
+      }
     }
   };
-
   return (
     <div
       className="container-fluid d-flex justify-content-center align-items-center vh-100"
@@ -179,7 +180,9 @@ const LEPIntakeForm = () => {
         <h2 className="fw-bold text-primary">Leadership Intake</h2>
         
         <div className="mb-4">
-          <label className="form-label fw-semibold">{sections[currentSection].questions[currentQuestion].prompt}</label>
+        <label className="form-label fw-semibold">
+  {sections[currentSection]?.questions[currentQuestion]?.prompt || "Loading..."}
+</label>
 
           {(() => {
             const q = sections[currentSection].questions[currentQuestion];
