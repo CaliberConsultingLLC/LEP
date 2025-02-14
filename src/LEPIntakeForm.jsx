@@ -128,17 +128,19 @@ const LEPIntakeForm = () => {
   // Drag handler for rankings
   const handleDragEnd = (event, id) => {
     const { active, over } = event;
+  
     if (!over || active.id === over.id) return;
-
+  
     setFormData((prev) => {
-      const updatedList = [...prev[id]];
-      const oldIndex = updatedList.indexOf(active.id);
-      const newIndex = updatedList.indexOf(over.id);
-
-      updatedList.splice(oldIndex, 1);
-      updatedList.splice(newIndex, 0, active.id);
-
-      return { ...prev, [id]: updatedList };
+      const oldIndex = prev[id].findIndex((item) => item.id === active.id);
+      const newIndex = prev[id].findIndex((item) => item.id === over.id);
+  
+      if (oldIndex === -1 || newIndex === -1) return prev;
+  
+      return {
+        ...prev,
+        [id]: arrayMove(prev[id], oldIndex, newIndex),
+      };
     });
   };
 
