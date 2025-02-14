@@ -40,7 +40,7 @@ const sections = [
       },
       {
         id: "teamDescription",
-        prompt: "How would you describe your team currently?",
+        prompt: "How would you describe the state of your team currently?",
         type: "text",
       },
     ],
@@ -127,19 +127,15 @@ const sections = [
 const LEPIntakeForm = () => {
   const [formData, setFormData] = useState({});
   const [currentSection, setCurrentSection] = useState(0);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
 
   const handleChange = (id, value, isMultiSelect = false) => {
     setFormData((prev) => ({
       ...prev,
-      [id]: isMultiSelect ? value : value, 
+      [id]: isMultiSelect ? value : value,
     }));
   };
 
-  // Fix: Initialize rankings in state
-  const [teamNeeds, setTeamNeeds] = useState(sections[2].questions[0].options);
-  const [confidenceRanking, setConfidenceRanking] = useState(sections[3].questions[2].options);
-
-  // Fix: Ensure correct update of rankings
   const handleDragEnd = (event, id, setState) => {
     const { active, over } = event;
     if (active.id !== over.id) {
@@ -148,82 +144,85 @@ const LEPIntakeForm = () => {
         const newIndex = items.findIndex(item => item.id === over.id);
         return arrayMove(items, oldIndex, newIndex);
       });
-      setFormData((prev) => ({ ...prev, [id]: [...teamNeeds] }));
+      setFormData((prev) => ({ ...prev, [id]: [...items] }));
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log("Submitting form:", formData);
-    try {
-      const response = await fetch("/api/analyze-leadership", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-      const result = await response.json();
-      console.log("AI Analysis Result:", result);
-      alert("Analysis Complete! Check console for results.");
-    } catch (error) {
-      console.error("Error submitting form:", error);
-      alert("There was an issue submitting the form.");
+  const handleNext = () => {
+    const totalQuestions = sections[currentSection].questions.length;
+    if (currentQuestion < totalQuestions - 1) {
+      setCurrentQuestion(currentQuestion + 1);
+    } else {
+      setCurrentQuestion(0);
+      setCurrentSection(currentSection + 1);
     }
   };
 
   return (
-    <div className="container mt-5 p-4 bg-light shadow rounded">
-      <h2 className="text-center mb-3">Leadership Intake</h2>
-      <h4>{sections[currentSection].title}</h4>
-      <form onSubmit={currentSection === sections.length - 1 ? handleSubmit : (e) => { e.preventDefault(); setCurrentSection(currentSection + 1); }}>
-        {sections[currentSection].questions.map((q) => (
-          <div className="mb-3" key={q.id}>
-            <label className="form-label">{q.prompt}</label>
+    <div className="container mt-5 d-flex justify-content-center">
+      <div className="card shadow-lg p-5 w-50">
+        <h2 className="text-center mb-4 fw-bold text-primary">Leadership Intake</h2>
+        <h4 className="text-center">{sections[currentSection].title}</h4>
+        <div className="mb-4">
+          <label className="form-label">{sections[currentSection].questions[currentQuestion].prompt}</label>
 
-            {q.type === "ranking" ? (
-              <DndContext collisionDetection={closestCenter} onDragEnd={(event) => handleDragEnd(event, q.id, q.id === "teamNeeds" ? setTeamNeeds : setConfidenceRanking)}>
-                <SortableContext items={q.id === "teamNeeds" ? teamNeeds : confidenceRanking} strategy={verticalListSortingStrategy}>
-                  {(q.id === "teamNeeds" ? teamNeeds : confidenceRanking).map((item) => (
-                    <SortableItem key={item.id} id={item.id}>
-                      {item.text}
-                    </SortableItem>
+          {(() => {
+            const q = sections[currentSection].questions[currentQuestion];
+
+            if (q.type === "ranking") {
+              return (
+                <DndContext collisionDetection={closestCenter} onDragEnd={(event) => handleDragEnd(event, q.id)}>
+                  <SortableContext items={formData[q.id] || q.options} strategy={verticalListSortingStrategy}>
+                    {(formData[q.id] || q.options).map((item) => (
+                      <SortableItem key={item.id} id={item.id}>
+                        {item.text}
+                      </SortableItem>
+                    ))}
+                  </SortableContext>
+                </DndContext>
+              );
+            }
+
+            if (q.type === "radio") {
+              return q.options.map((opt) => (
+                <div key={opt}>
+                  <input type="radio" name={q.id} value={opt} onChange={() => handleChange(q.id, opt)} /> {opt}
+                </div>
+              ));
+            }
+
+            if (q.type === "multi-select") {
+              return (
+                <div className="row">
+                  {q.options.map((opt) => (
+                    <div key={opt} className="col-md-4 d-flex align-items-center">
+                      <input
+                        type="checkbox"
+                        name={q.id}
+                        value={opt}
+                        checked={formData[q.id]?.includes(opt) || false}
+                        onChange={(e) => {
+                          const selected = formData[q.id] || [];
+                          if (e.target.checked && selected.length < q.limit) {
+                            handleChange(q.id, [...selected, opt]);
+                          } else if (!e.target.checked) {
+                            handleChange(q.id, selected.filter(item => item !== opt));
+                          }
+                        }}
+                      />
+                      <label className="ms-2">{opt}</label>
+                    </div>
                   ))}
-                </SortableContext>
-              </DndContext>
-            ) : q.type === "radio" ? q.options.map((opt) => (
-              <div key={opt}>
-                <input type="radio" name={q.id} value={opt} onChange={() => handleChange(q.id, opt)} /> {opt}
-              </div>
-            )) : q.type === "multi-select" ? (
-              <div className="row">
-                {q.options.map((opt, index) => (
-                  <div key={opt} className="col-md-4 d-flex align-items-center">
-                    <input
-                      type="checkbox"
-                      name={q.id}
-                      value={opt}
-                      checked={formData[q.id]?.includes(opt) || false}
-                      onChange={(e) => {
-                        const selected = formData[q.id] || [];
-                        if (e.target.checked && selected.length < q.limit) {
-                          handleChange(q.id, [...selected, opt]);
-                        } else if (!e.target.checked) {
-                          handleChange(q.id, selected.filter(item => item !== opt));
-                        }
-                      }}
-                    />
-                    <label className="ms-2">{opt}</label>
-                  </div>
-                ))}
-              </div>
-            ) : q.type === "text" && (
-              <textarea className="form-control" onChange={(e) => handleChange(q.id, e.target.value)} />
-            )}
-          </div>
-        ))}
-        <button type="submit" className="btn btn-primary w-100">{currentSection === sections.length - 1 ? "Submit" : "Next Section"}</button>
-      </form>
+                </div>
+              );
+            }
+
+            return <textarea className="form-control" onChange={(e) => handleChange(q.id, e.target.value)} />;
+          })()}
+        </div>
+
+        <button onClick={handleNext} className="btn btn-primary w-100 py-2 fw-bold rounded-pill shadow-sm">Next</button>
+      </div>
     </div>
   );
 };
