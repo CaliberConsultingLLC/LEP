@@ -4,6 +4,7 @@ import { db } from "./firebase";
 import { collection, addDoc } from "firebase/firestore";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { arrayMove } from "@dnd-kit/sortable";
 import SortableItem from "./components/SortableItem.jsx";
 
 const sections = [
@@ -79,7 +80,13 @@ const sections = [
         id: "teamNeeds",
         prompt: "Rank the following in order of what your team needs most from you:",
         type: "ranking",
-        options: ["Clarity", "Support", "Direction", "Flexibility", "Encouragement"],
+        options: [
+          { id: "clarity", text: "Clarity" },
+          { id: "support", text: "Support" },
+          { id: "direction", text: "Direction" },
+          { id: "flexibility", text: "Flexibility" },
+          { id: "encouragement", text: "Encouragement" }
+        ],
       },
       {
         id: "teamOpenness",
@@ -107,7 +114,11 @@ const sections = [
         id: "confidenceRanking",
         prompt: "Rank the following leadership competencies in order of confidence:",
         type: "ranking",
-        options: ["Decision-making", "Adaptability", "Conflict resolution"],
+        options: [
+          { id: "decision-making", text: "Decision-making" },
+          { id: "adaptability", text: "Adaptability" },
+          { id: "conflict-resolution", text: "Conflict resolution" }
+        ],
       },
     ],
   },
@@ -117,41 +128,22 @@ const LEPIntakeForm = () => {
   const [formData, setFormData] = useState({});
   const [currentSection, setCurrentSection] = useState(0);
 
-  // Initialize rankings in state
-  const [teamNeeds, setTeamNeeds] = useState([
-    { id: "clarity", text: "Clarity" },
-    { id: "support", text: "Support" },
-    { id: "direction", text: "Direction" },
-    { id: "flexibility", text: "Flexibility" },
-    { id: "encouragement", text: "Encouragement" }
-  ]);
-  
-  const [confidenceRanking, setConfidenceRanking] = useState([
-    { id: "decision", text: "Decision-making" },
-    { id: "adaptability", text: "Adaptability" },
-    { id: "conflict", text: "Conflict resolution" }
-  ]);
- 
-
   const handleChange = (id, value) => {
     setFormData((prev) => ({ ...prev, [id]: value }));
   };
 
-  // Drag handler for rankings
+  const handleRankingChange = (id, newOrder) => {
+    setFormData((prev) => ({ ...prev, [id]: newOrder }));
+  };
+
   const handleDragEnd = (event, id) => {
     const { active, over } = event;
-    if (!over || active.id === over.id) return;
-  
-    setFormData((prev) => {
-      const currentList = prev[id] || sections.find(s => s.questions.some(q => q.id === id))?.questions.find(q => q.id === id)?.options || [];
-      const oldIndex = currentList.findIndex((item) => item.id === active.id);
-      const newIndex = currentList.findIndex((item) => item.id === over.id);
-  
-      if (oldIndex === -1 || newIndex === -1) return prev;
-  
-      const newOrder = arrayMove(currentList, oldIndex, newIndex);
-      return { ...prev, [id]: newOrder };
-    });
+    if (active.id !== over.id) {
+      setFormData((prev) => {
+        const updatedList = arrayMove(prev[id], prev[id].findIndex(i => i.id === active.id), prev[id].findIndex(i => i.id === over.id));
+        return { ...prev, [id]: updatedList };
+      });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -184,15 +176,15 @@ const LEPIntakeForm = () => {
             <label className="form-label">{q.prompt}</label>
 
             {q.type === "ranking" ? (
-  <DndContext collisionDetection={closestCenter} onDragEnd={(event) => handleDragEnd(event, q.id)}>
-    <SortableContext items={formData[q.id] || q.options} strategy={verticalListSortingStrategy}>
-      {(formData[q.id] || q.options).map((item) => (
-        <SortableItem key={item.id} id={item.id}>
-          <div className="list-group-item">{item.text}</div>
-        </SortableItem>
-      ))}
-    </SortableContext>
-  </DndContext>
+              <DndContext collisionDetection={closestCenter} onDragEnd={(event) => handleDragEnd(event, q.id)}>
+                <SortableContext items={formData[q.id] || q.options} strategy={verticalListSortingStrategy}>
+                  {(formData[q.id] || q.options).map((item) => (
+                    <SortableItem key={item.id} id={item.id}>
+                      {item.text}
+                    </SortableItem>
+                  ))}
+                </SortableContext>
+              </DndContext>
             ) : q.type === "radio" ? q.options.map((opt) => (
               <div key={opt}>
                 <input type="radio" name={q.id} value={opt} onChange={() => handleChange(q.id, opt)} /> {opt}
