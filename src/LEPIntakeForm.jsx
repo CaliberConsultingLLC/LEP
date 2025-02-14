@@ -242,6 +242,8 @@ const LEPIntakeForm = () => {
           Next
         </button>
       </div>
-    </div>
+      </div>
   );
-}
+};
+
+export default LEPIntakeForm;
