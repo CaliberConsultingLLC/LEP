@@ -136,15 +136,16 @@ const LEPIntakeForm = () => {
     }));
   };
 
-  const handleDragEnd = (event, id, setState) => {
+  // Restored correct ranking logic
+  const handleDragEnd = (event, id) => {
     const { active, over } = event;
     if (active.id !== over.id) {
-      setState((items) => {
-        const oldIndex = items.findIndex(item => item.id === active.id);
-        const newIndex = items.findIndex(item => item.id === over.id);
-        return arrayMove(items, oldIndex, newIndex);
+      setFormData((prev) => {
+        const updatedList = arrayMove(prev[id] || sections.find(s => s.questions.some(q => q.id === id)).questions.find(q => q.id === id).options,
+          prev[id]?.findIndex(i => i.id === active.id),
+          prev[id]?.findIndex(i => i.id === over.id));
+        return { ...prev, [id]: updatedList };
       });
-      setFormData((prev) => ({ ...prev, [id]: [...items] }));
     }
   };
 
@@ -159,29 +160,28 @@ const LEPIntakeForm = () => {
   };
 
   return (
-    <div className="container mt-5 d-flex justify-content-center">
-  <div className="card shadow-lg p-5" style={{ width: "500px" }}>
-    <h2 className="text-center mb-3 fw-bold text-primary">Leadership Intake</h2>
-    <h4 className="text-center text-secondary">{sections[currentSection].title}</h4>
-    <div className="mb-4">
-      <label className="form-label fw-semibold">{sections[currentSection].questions[currentQuestion].prompt}</label>
+    <div className="container d-flex justify-content-center align-items-center vh-100">
+      <div className="card shadow-lg p-5" style={{ width: "500px" }}>
+        <h2 className="text-center mb-3 fw-bold text-primary">Leadership Intake</h2>
+        <div className="mb-4">
+          <label className="form-label fw-semibold">{sections[currentSection].questions[currentQuestion].prompt}</label>
 
-      {(() => {
-        const q = sections[currentSection].questions[currentQuestion];
+          {(() => {
+            const q = sections[currentSection].questions[currentQuestion];
 
-        if (q.type === "ranking") {
-          return (
-            <DndContext collisionDetection={closestCenter} onDragEnd={(event) => handleDragEnd(event, q.id)}>
-              <SortableContext items={formData[q.id] || q.options} strategy={verticalListSortingStrategy}>
-                {(formData[q.id] || q.options).map((item) => (
-                  <SortableItem key={item.id} id={item.id}>
-                    {item.text}
-                  </SortableItem>
-                ))}
-              </SortableContext>
-            </DndContext>
-          );
-        }
+            if (q.type === "ranking") {
+              return (
+                <DndContext collisionDetection={closestCenter} onDragEnd={(event) => handleDragEnd(event, q.id)}>
+                  <SortableContext items={formData[q.id] || q.options} strategy={verticalListSortingStrategy}>
+                    {(formData[q.id] || q.options).map((item) => (
+                      <SortableItem key={item.id} id={item.id}>
+                        {item.text}
+                      </SortableItem>
+                    ))}
+                  </SortableContext>
+                </DndContext>
+              );
+            }
 
             if (q.type === "radio") {
               return q.options.map((opt) => (
