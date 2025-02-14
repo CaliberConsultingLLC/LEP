@@ -172,15 +172,15 @@ const LEPIntakeForm = () => {
             <label className="form-label">{q.prompt}</label>
 
             {q.type === "ranking" ? (
-              <DndContext collisionDetection={closestCenter} onDragEnd={(event) => handleDragEnd(event, q.id)}>
-                <SortableContext items={formData[q.id] || q.options}>
-                  {formData[q.id]?.map((option, index) => (
-                    <SortableItem key={option} id={option}>
-                      <div className="list-group-item">{index + 1}. {option}</div>
-                    </SortableItem>
-                  ))}
-                </SortableContext>
-              </DndContext>
+  <DndContext collisionDetection={closestCenter} onDragEnd={(event) => handleRankingChange(q.id, event)}>
+    <SortableContext items={formData[q.id] || q.options} strategy={verticalListSortingStrategy}>
+      {(formData[q.id] || q.options).map((item, index) => (
+        <SortableItem key={item} id={item}>
+          <div className="list-group-item p-2 border rounded">{index + 1}. {item}</div>
+        </SortableItem>
+      ))}
+    </SortableContext>
+  </DndContext>
             ) : q.type === "radio" ? q.options.map((opt) => (
               <div key={opt}>
                 <input type="radio" name={q.id} value={opt} onChange={() => handleChange(q.id, opt)} /> {opt}
