@@ -163,30 +163,26 @@ const LEPIntakeForm = () => {
     }
   };
   return (
-    <div
-      className="container-fluid d-flex justify-content-center align-items-center vh-100"
-      style={{
-        backgroundImage: "url('/SM background 1.jpg')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
+    <div 
+      className="d-flex align-items-center justify-content-center vh-100" 
+      style={{ 
+        backgroundImage: "url('/SM background 1.jpg')", 
+        backgroundSize: "cover", 
+        backgroundPosition: "center", 
+        backgroundRepeat: "no-repeat" 
       }}
     >
-      <div className="card shadow-lg p-5 text-center" style={{ width: "500px", backgroundColor: "rgba(255, 255, 255, 0.9)", borderRadius: "15px" }}>
-        
-        {/* Logo */}
-        <img src="/circle logo test.jpg" alt="Leadership Logo" className="mb-3" style={{ width: "150px" }} />
-        
-        <h2 className="fw-bold text-primary">Leadership Intake</h2>
-        
+      <div className="card shadow-lg p-5" style={{ maxWidth: "600px", width: "100%" }}>
+        <div className="text-center">
+          <img src="/circle logo test.jpg" alt="LEP Logo" style={{ width: "150px", marginBottom: "15px" }} />
+        </div>
+        <h2 className="text-center mb-3 fw-bold" style={{ color: "#FFFFFF" }}>Leadership Intake</h2>
         <div className="mb-4">
-        <label className="form-label fw-semibold">
-  {sections[currentSection]?.questions[currentQuestion]?.prompt || "Loading..."}
-</label>
-
+          <label className="form-label fw-semibold">{sections[currentSection].questions[currentQuestion].prompt}</label>
+  
           {(() => {
             const q = sections[currentSection].questions[currentQuestion];
-
+  
             if (q.type === "ranking") {
               return (
                 <DndContext collisionDetection={closestCenter} onDragEnd={(event) => handleDragEnd(event, q.id)}>
@@ -200,7 +196,7 @@ const LEPIntakeForm = () => {
                 </DndContext>
               );
             }
-
+  
             if (q.type === "radio") {
               return q.options.map((opt) => (
                 <div key={opt}>
@@ -208,7 +204,7 @@ const LEPIntakeForm = () => {
                 </div>
               ));
             }
-
+  
             if (q.type === "multi-select") {
               return (
                 <div className="row">
@@ -234,15 +230,18 @@ const LEPIntakeForm = () => {
                 </div>
               );
             }
-
+  
             return <textarea className="form-control" onChange={(e) => handleChange(q.id, e.target.value)} />;
           })()}
         </div>
-
-        <button onClick={handleNext} className="btn btn-primary w-100 py-2 fw-bold rounded-pill shadow-sm">Next</button>
+  
+        <button 
+          onClick={handleNext} 
+          className="btn w-100 py-2 fw-bold rounded-pill shadow-sm" 
+          style={{ backgroundColor: "#FFFFFF", border: "none" }}>
+          Next
+        </button>
       </div>
     </div>
   );
-};
-
-export default LEPIntakeForm;
+}
