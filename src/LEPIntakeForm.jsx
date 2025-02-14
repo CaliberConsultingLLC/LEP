@@ -123,6 +123,20 @@ const LEPIntakeForm = () => {
     setFormData((prev) => ({ ...prev, [id]: value }));
   };
 
+  const handleDragEnd = (event, id) => {
+    const { active, over } = event;
+    if (active.id !== over.id) {
+      setFormData((prev) => {
+        const newOrder = [...prev[id]];
+        const oldIndex = newOrder.indexOf(active.id);
+        const newIndex = newOrder.indexOf(over.id);
+        newOrder.splice(oldIndex, 1);
+        newOrder.splice(newIndex, 0, active.id);
+        return { ...prev, [id]: newOrder };
+      });
+    }
+  };
+
 const [teamNeeds, setTeamNeeds] = useState([
     { id: "clarity", text: "Clarity" },
     { id: "support", text: "Support" },
@@ -172,7 +186,18 @@ const [teamNeeds, setTeamNeeds] = useState([
                 </SortableContext>
               </DndContext>
             ) : q.type === "ranking" ? (
-              <SortableRanking items={teamNeeds} setItems={setTeamNeeds} />
+              <DndContext 
+                collisionDetection={closestCenter} 
+                onDragEnd={(event) => handleDragEnd(event, q.id)}
+              >
+                <SortableContext items={formData[q.id] || q.options}>
+                  {formData[q.id]?.map((option) => (
+                    <SortableItem key={option} id={option}>
+                      <div className="list-group-item">{option}</div>
+                    </SortableItem>
+                  ))}
+                </SortableContext>
+              </DndContext>
             ) : q.type === "radio" ? q.options.map((opt) => (
               <div key={opt}>
                 <input type="radio" name={q.id} value={opt} onChange={() => handleChange(q.id, opt)} /> {opt}
