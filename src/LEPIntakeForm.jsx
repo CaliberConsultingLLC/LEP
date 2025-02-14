@@ -4,9 +4,7 @@ import { db } from "./firebase";
 import { collection, addDoc } from "firebase/firestore";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import { arrayMove } from "@dnd-kit/sortable";
 import SortableItem from "./components/SortableItem.jsx";
-import SortableRanking from "./components/SortableRanking.jsx";
 
 const sections = [
   {
@@ -119,34 +117,29 @@ const LEPIntakeForm = () => {
   const [formData, setFormData] = useState({});
   const [currentSection, setCurrentSection] = useState(0);
 
+  // Initialize rankings in state
+  const [teamNeeds, setTeamNeeds] = useState(["Clarity", "Support", "Direction", "Flexibility", "Encouragement"]);
+  const [confidenceRanking, setConfidenceRanking] = useState(["Decision-making", "Adaptability", "Conflict resolution"]);
+
   const handleChange = (id, value) => {
     setFormData((prev) => ({ ...prev, [id]: value }));
   };
 
+  // Drag handler for rankings
   const handleDragEnd = (event, id) => {
     const { active, over } = event;
-    if (active.id !== over.id) {
-      setFormData((prev) => {
-        const newOrder = [...prev[id]];
-        const oldIndex = newOrder.indexOf(active.id);
-        const newIndex = newOrder.indexOf(over.id);
-        newOrder.splice(oldIndex, 1);
-        newOrder.splice(newIndex, 0, active.id);
-        return { ...prev, [id]: newOrder };
-      });
-    }
-  };
+    if (!over || active.id === over.id) return;
 
-const [teamNeeds, setTeamNeeds] = useState([
-    { id: "clarity", text: "Clarity" },
-    { id: "support", text: "Support" },
-    { id: "direction", text: "Direction" },
-    { id: "flexibility", text: "Flexibility" },
-    { id: "encouragement", text: "Encouragement" }
-  ]);
+    setFormData((prev) => {
+      const updatedList = [...prev[id]];
+      const oldIndex = updatedList.indexOf(active.id);
+      const newIndex = updatedList.indexOf(over.id);
 
-  const handleRankingChange = (id, newOrder) => {
-    setFormData((prev) => ({ ...prev, [id]: newOrder }));
+      updatedList.splice(oldIndex, 1);
+      updatedList.splice(newIndex, 0, active.id);
+
+      return { ...prev, [id]: updatedList };
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -177,23 +170,13 @@ const [teamNeeds, setTeamNeeds] = useState([
         {sections[currentSection].questions.map((q) => (
           <div className="mb-3" key={q.id}>
             <label className="form-label">{q.prompt}</label>
+
             {q.type === "ranking" ? (
-              <DndContext collisionDetection={closestCenter}>
-                <SortableContext items={q.options} strategy={verticalListSortingStrategy}>
-                  {q.options.map((item) => (
-                    <SortableItem key={item} id={item} />
-                  ))}
-                </SortableContext>
-              </DndContext>
-            ) : q.type === "ranking" ? (
-              <DndContext 
-                collisionDetection={closestCenter} 
-                onDragEnd={(event) => handleDragEnd(event, q.id)}
-              >
+              <DndContext collisionDetection={closestCenter} onDragEnd={(event) => handleDragEnd(event, q.id)}>
                 <SortableContext items={formData[q.id] || q.options}>
-                  {formData[q.id]?.map((option) => (
+                  {formData[q.id]?.map((option, index) => (
                     <SortableItem key={option} id={option}>
-                      <div className="list-group-item">{option}</div>
+                      <div className="list-group-item">{index + 1}. {option}</div>
                     </SortableItem>
                   ))}
                 </SortableContext>
