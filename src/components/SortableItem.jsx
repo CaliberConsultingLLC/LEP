@@ -9,10 +9,11 @@ const SortableItem = ({ id, children }) => {
     transform: CSS.Transform.toString(transform),
     transition,
     padding: "10px",
+    margin: "5px 0",
     border: "1px solid #ccc",
-    marginBottom: "5px",
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "#f8f9fa",
     cursor: "grab",
+    borderRadius: "5px",
   };
 
   return (

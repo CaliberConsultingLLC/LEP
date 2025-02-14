@@ -6,6 +6,7 @@ import { DndContext, closestCenter } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { arrayMove } from "@dnd-kit/sortable";
 import SortableItem from "./components/SortableItem.jsx";
+import SortableRanking from "./components/SortableRanking.jsx";
 
 const sections = [
   {
@@ -122,6 +123,14 @@ const LEPIntakeForm = () => {
     setFormData((prev) => ({ ...prev, [id]: value }));
   };
 
+const [teamNeeds, setTeamNeeds] = useState([
+    { id: "clarity", text: "Clarity" },
+    { id: "support", text: "Support" },
+    { id: "direction", text: "Direction" },
+    { id: "flexibility", text: "Flexibility" },
+    { id: "encouragement", text: "Encouragement" }
+  ]);
+
   const handleRankingChange = (id, newOrder) => {
     setFormData((prev) => ({ ...prev, [id]: newOrder }));
   };
@@ -162,6 +171,8 @@ const LEPIntakeForm = () => {
                   ))}
                 </SortableContext>
               </DndContext>
+            ) : q.type === "ranking" ? (
+              <SortableRanking items={teamNeeds} setItems={setTeamNeeds} />
             ) : q.type === "radio" ? q.options.map((opt) => (
               <div key={opt}>
                 <input type="radio" name={q.id} value={opt} onChange={() => handleChange(q.id, opt)} /> {opt}
