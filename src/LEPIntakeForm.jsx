@@ -160,28 +160,28 @@ const LEPIntakeForm = () => {
 
   return (
     <div className="container mt-5 d-flex justify-content-center">
-      <div className="card shadow-lg p-5 w-50">
-        <h2 className="text-center mb-4 fw-bold text-primary">Leadership Intake</h2>
-        <h4 className="text-center">{sections[currentSection].title}</h4>
-        <div className="mb-4">
-          <label className="form-label">{sections[currentSection].questions[currentQuestion].prompt}</label>
+  <div className="card shadow-lg p-5" style={{ width: "500px" }}>
+    <h2 className="text-center mb-3 fw-bold text-primary">Leadership Intake</h2>
+    <h4 className="text-center text-secondary">{sections[currentSection].title}</h4>
+    <div className="mb-4">
+      <label className="form-label fw-semibold">{sections[currentSection].questions[currentQuestion].prompt}</label>
 
-          {(() => {
-            const q = sections[currentSection].questions[currentQuestion];
+      {(() => {
+        const q = sections[currentSection].questions[currentQuestion];
 
-            if (q.type === "ranking") {
-              return (
-                <DndContext collisionDetection={closestCenter} onDragEnd={(event) => handleDragEnd(event, q.id)}>
-                  <SortableContext items={formData[q.id] || q.options} strategy={verticalListSortingStrategy}>
-                    {(formData[q.id] || q.options).map((item) => (
-                      <SortableItem key={item.id} id={item.id}>
-                        {item.text}
-                      </SortableItem>
-                    ))}
-                  </SortableContext>
-                </DndContext>
-              );
-            }
+        if (q.type === "ranking") {
+          return (
+            <DndContext collisionDetection={closestCenter} onDragEnd={(event) => handleDragEnd(event, q.id)}>
+              <SortableContext items={formData[q.id] || q.options} strategy={verticalListSortingStrategy}>
+                {(formData[q.id] || q.options).map((item) => (
+                  <SortableItem key={item.id} id={item.id}>
+                    {item.text}
+                  </SortableItem>
+                ))}
+              </SortableContext>
+            </DndContext>
+          );
+        }
 
             if (q.type === "radio") {
               return q.options.map((opt) => (
