@@ -141,9 +141,11 @@ const LEPIntakeForm = () => {
     const { active, over } = event;
     if (active.id !== over.id) {
       setFormData((prev) => {
-        const updatedList = arrayMove(prev[id] || sections.find(s => s.questions.some(q => q.id === id)).questions.find(q => q.id === id).options,
+        const updatedList = arrayMove(
+          prev[id] || sections.find(s => s.questions.some(q => q.id === id)).questions.find(q => q.id === id).options,
           prev[id]?.findIndex(i => i.id === active.id),
-          prev[id]?.findIndex(i => i.id === over.id));
+          prev[id]?.findIndex(i => i.id === over.id)
+        );
         return { ...prev, [id]: updatedList };
       });
     }
@@ -160,9 +162,22 @@ const LEPIntakeForm = () => {
   };
 
   return (
-    <div className="container d-flex justify-content-center align-items-center vh-100">
-      <div className="card shadow-lg p-5" style={{ width: "500px" }}>
-        <h2 className="text-center mb-3 fw-bold text-primary">Leadership Intake</h2>
+    <div
+      className="container-fluid d-flex justify-content-center align-items-center vh-100"
+      style={{
+        backgroundImage: "url('/SM background 1.jpg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
+      <div className="card shadow-lg p-5 text-center" style={{ width: "500px", backgroundColor: "rgba(255, 255, 255, 0.9)", borderRadius: "15px" }}>
+        
+        {/* Logo */}
+        <img src="/circle logo test.jpg" alt="Leadership Logo" className="mb-3" style={{ width: "150px" }} />
+        
+        <h2 className="fw-bold text-primary">Leadership Intake</h2>
+        
         <div className="mb-4">
           <label className="form-label fw-semibold">{sections[currentSection].questions[currentQuestion].prompt}</label>
 
