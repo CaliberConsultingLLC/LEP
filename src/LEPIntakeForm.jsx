@@ -196,9 +196,9 @@ const LEPIntakeForm = () => {
                 <input type="radio" name={q.id} value={opt} onChange={() => handleChange(q.id, opt)} /> {opt}
               </div>
             )) : q.type === "multi-select" ? (
-              <div className="d-flex flex-wrap gap-2">
-                {q.options.map((opt) => (
-                  <label key={opt} className="d-flex align-items-center gap-1">
+              <div className="row">
+                {q.options.map((opt, index) => (
+                  <div key={opt} className="col-md-4 d-flex align-items-center">
                     <input
                       type="checkbox"
                       name={q.id}
@@ -213,8 +213,8 @@ const LEPIntakeForm = () => {
                         }
                       }}
                     />
-                    {opt}
-                  </label>
+                    <label className="ms-2">{opt}</label>
+                  </div>
                 ))}
               </div>
             ) : q.type === "text" && (
