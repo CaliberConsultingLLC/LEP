@@ -132,17 +132,20 @@ const LEPIntakeForm = () => {
     setFormData((prev) => ({ ...prev, [id]: value }));
   };
 
-  const handleRankingChange = (id, newOrder) => {
-    setFormData((prev) => ({ ...prev, [id]: newOrder }));
-  };
+  // Fix: Initialize rankings in state
+  const [teamNeeds, setTeamNeeds] = useState(sections[2].questions[0].options);
+  const [confidenceRanking, setConfidenceRanking] = useState(sections[3].questions[2].options);
 
-  const handleDragEnd = (event, id) => {
+  // Fix: Ensure correct update of rankings
+  const handleDragEnd = (event, id, setState) => {
     const { active, over } = event;
     if (active.id !== over.id) {
-      setFormData((prev) => {
-        const updatedList = arrayMove(prev[id], prev[id].findIndex(i => i.id === active.id), prev[id].findIndex(i => i.id === over.id));
-        return { ...prev, [id]: updatedList };
+      setState((items) => {
+        const oldIndex = items.findIndex(item => item.id === active.id);
+        const newIndex = items.findIndex(item => item.id === over.id);
+        return arrayMove(items, oldIndex, newIndex);
       });
+      setFormData((prev) => ({ ...prev, [id]: [...teamNeeds] }));
     }
   };
 
@@ -176,9 +179,9 @@ const LEPIntakeForm = () => {
             <label className="form-label">{q.prompt}</label>
 
             {q.type === "ranking" ? (
-              <DndContext collisionDetection={closestCenter} onDragEnd={(event) => handleDragEnd(event, q.id)}>
-                <SortableContext items={formData[q.id] || q.options} strategy={verticalListSortingStrategy}>
-                  {(formData[q.id] || q.options).map((item) => (
+              <DndContext collisionDetection={closestCenter} onDragEnd={(event) => handleDragEnd(event, q.id, q.id === "teamNeeds" ? setTeamNeeds : setConfidenceRanking)}>
+                <SortableContext items={q.id === "teamNeeds" ? teamNeeds : confidenceRanking} strategy={verticalListSortingStrategy}>
+                  {(q.id === "teamNeeds" ? teamNeeds : confidenceRanking).map((item) => (
                     <SortableItem key={item.id} id={item.id}>
                       {item.text}
                     </SortableItem>
