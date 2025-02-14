@@ -128,8 +128,11 @@ const LEPIntakeForm = () => {
   const [formData, setFormData] = useState({});
   const [currentSection, setCurrentSection] = useState(0);
 
-  const handleChange = (id, value) => {
-    setFormData((prev) => ({ ...prev, [id]: value }));
+  const handleChange = (id, value, isMultiSelect = false) => {
+    setFormData((prev) => ({
+      ...prev,
+      [id]: isMultiSelect ? value : value, 
+    }));
   };
 
   // Fix: Initialize rankings in state
@@ -193,9 +196,27 @@ const LEPIntakeForm = () => {
                 <input type="radio" name={q.id} value={opt} onChange={() => handleChange(q.id, opt)} /> {opt}
               </div>
             )) : q.type === "multi-select" ? (
-              <select multiple className="form-select" onChange={(e) => handleChange(q.id, Array.from(e.target.selectedOptions, option => option.value))}>
-                {q.options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-              </select>
+              <div className="d-flex flex-wrap gap-2">
+                {q.options.map((opt) => (
+                  <label key={opt} className="d-flex align-items-center gap-1">
+                    <input
+                      type="checkbox"
+                      name={q.id}
+                      value={opt}
+                      checked={formData[q.id]?.includes(opt) || false}
+                      onChange={(e) => {
+                        const selected = formData[q.id] || [];
+                        if (e.target.checked && selected.length < q.limit) {
+                          handleChange(q.id, [...selected, opt]);
+                        } else if (!e.target.checked) {
+                          handleChange(q.id, selected.filter(item => item !== opt));
+                        }
+                      }}
+                    />
+                    {opt}
+                  </label>
+                ))}
+              </div>
             ) : q.type === "text" && (
               <textarea className="form-control" onChange={(e) => handleChange(q.id, e.target.value)} />
             )}
