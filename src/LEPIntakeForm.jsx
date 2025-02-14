@@ -5,7 +5,7 @@ import { collection, addDoc } from "firebase/firestore";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { arrayMove } from "@dnd-kit/sortable";
-import SortableItem from "./components/SortableItem";
+import SortableItem from "./components/SortableItem.jsx";
 
 const sections = [
   {
