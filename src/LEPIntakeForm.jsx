@@ -12,6 +12,17 @@ const sections = [
     title: "Leadership Self-Perception",
     questions: [
       {
+        id: "teamSize",
+        prompt: "How many people are in your team?",
+        type: "number",
+      },
+      {
+        id: "leadershipExperience",
+        prompt: "How many years have you been in a leadership role?",
+        type: "radio",
+        options: ["Less than 1 year", "1-3 years", "3-5 years", "5+ years"],
+      },
+      {
         id: "leadershipJourney",
         prompt: "How do you see yourself as a leader?",
         type: "radio",
@@ -29,13 +40,20 @@ const sections = [
         limit: 3,
       },
       {
+        id: "confidenceLevel",
+        prompt: "How confident are you in your decision-making abilities?",
+        type: "likert",
+        scale: [1, 2, 3, 4, 5],
+        labels: { 1: "Not Confident", 5: "Very Confident" },
+      },
+      {
         id: "leadershipChallenge",
         prompt: "What’s your biggest leadership challenge today?",
-        type: "radio",
+        type: "dropdown",
         options: [
-          "Engagement", "Decision-making", "Influence", "Conflict Resolution",
+          "Decision-making", "Influence", "Conflict Resolution",
           "Time Management", "Delegation", "Emotional Intelligence",
-          "Strategic Thinking", "Coaching & Mentoring",
+          "Strategic Thinking", "Coaching & Mentoring"
         ],
       },
       {
