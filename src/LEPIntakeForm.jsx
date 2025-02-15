@@ -24,7 +24,7 @@ const sections = [
       },
       {
         id: "leadershipJourney",
-        prompt: "How do you see yourself as a leader?",
+        prompt: "How would you describe yourself as a leader?",
         type: "radio",
         options: ["Emerging", "Learning", "Experienced", "Mastering"],
       },
@@ -221,6 +221,30 @@ const LEPIntakeForm = () => {
                   <input type="radio" name={q.id} value={opt} onChange={() => handleChange(q.id, opt)} /> {opt}
                 </div>
               ));
+            }
+            if (q.type === "likert") {
+              return (
+                <div className="d-flex flex-column">
+                  <div className="d-flex justify-content-between mb-2">
+                    <span>{q.labels?.[q.scale[0]] || q.scale[0]}</span>
+                    <span>{q.labels?.[q.scale[q.scale.length - 1]] || q.scale[q.scale.length - 1]}</span>
+                  </div>
+                  <div className="d-flex justify-content-between">
+                    {q.scale.map((value) => (
+                      <label key={value} className="text-center">
+                        <input
+                          type="radio"
+                          name={q.id}
+                          value={value}
+                          onChange={() => handleChange(q.id, value)}
+                          style={{ marginRight: "5px" }}
+                        />
+                        {value}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              );
             }
   
             if (q.type === "multi-select") {
