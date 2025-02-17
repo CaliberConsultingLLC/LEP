@@ -328,11 +328,16 @@ const handleSubmit = async (e) => {
   
         {/* AI Analysis Display */}
         {analysisResult && (
-          <div className="mt-4 p-3 bg-light border rounded">
-            <h4 className="fw-bold">AI Leadership Analysis</h4>
-            <p>{analysisResult}</p>
-          </div>
-        )}
+  <div className="mt-4 p-3 bg-light border rounded">
+    <h4 className="fw-bold">AI Leadership Analysis</h4>
+    <p><strong>{analysisResult.split("\n")[0]}</strong></p> {/* Extract summary */}
+    <ul>
+      {analysisResult.split("\n").slice(1).map((point, index) => (
+        point.trim() && <li key={index}>{point}</li>
+      ))}
+    </ul>
+  </div>
+)}
       </div>
     </div>
   );
