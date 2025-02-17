@@ -194,7 +194,7 @@ const LEPIntakeForm = () => {
         <div className="text-center">
           <img src="/circle logo test.jpg" alt="LEP Logo" style={{ width: "150px", marginBottom: "15px" }} />
         </div>
-        <h2 className="text-center mb-3 fw-bold" style={{ color: "#FFFFFF" }}>Leadership Intake</h2>
+        <h2 className="text-center mb-3 fw-bold" style={{ color: "#FFFFFF" }}></h2>
         <div className="mb-4">
           <label className="form-label fw-semibold">{sections[currentSection].questions[currentQuestion].prompt}</label>
   
