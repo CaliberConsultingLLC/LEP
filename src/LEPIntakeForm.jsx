@@ -182,19 +182,21 @@ const LEPIntakeForm = () => {
   };
   return (
     <div 
-      className="d-flex align-items-center justify-content-center vh-100" 
+      className="d-flex align-items-center justify-content-center vh-100 w-100" 
       style={{ 
         backgroundImage: "url('/SM background 1.jpg')", 
         backgroundSize: "cover", 
         backgroundPosition: "center", 
-        backgroundRepeat: "no-repeat" 
+        backgroundRepeat: "no-repeat",
+        minHeight: "100vh",
+    width: "100vw" 
       }}
     >
       <div className="card shadow-lg p-5" style={{ maxWidth: "1800px", width: "100%" }}>
         <div className="text-center">
           <img src="/circle logo test.jpg" alt="LEP Logo" style={{ width: "150px", marginBottom: "15px" }} />
         </div>
-        <h2 className="text-center mb-3 fw-bold" style={{ color: "#FFFFFF" }}></h2>
+  
         <div className="mb-4">
           <label className="form-label fw-semibold">{sections[currentSection].questions[currentQuestion].prompt}</label>
   
