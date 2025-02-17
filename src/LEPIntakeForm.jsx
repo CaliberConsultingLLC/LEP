@@ -171,7 +171,9 @@ const LEPIntakeForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Submitting form:", formData);
+    console.log("🚀 Form submission started...");
+  
+    console.log("📤 Form Data:", formData); // Logs form data before sending
   
     try {
       const response = await fetch("/api/analyze-leadership", {
@@ -182,34 +184,35 @@ const LEPIntakeForm = () => {
         body: JSON.stringify(formData),
       });
   
-      console.log("Response status:", response.status); // Debugging
+      console.log("🔍 Fetch request sent...");
+  
+      if (!response.ok) {
+        throw new Error(`Server responded with ${response.status}`);
+      }
   
       const result = await response.json();
-      console.log("AI Analysis Result:", result);
+      console.log("✅ AI Analysis Result:", result);
   
       alert("Analysis Complete! Check console for results.");
     } catch (error) {
-      console.error("Error submitting form:", error);
+      console.error("❌ Error submitting form:", error);
       alert("There was an issue submitting the form.");
     }
   };
+  
 
   const handleNext = () => {
     const totalSections = sections.length;
     const totalQuestions = sections[currentSection].questions.length;
   
     if (currentQuestion < totalQuestions - 1) {
-      // Move to next question within the same section
       setCurrentQuestion(currentQuestion + 1);
     } else if (currentSection < totalSections - 1) {
-      // Move to the next section
       setCurrentQuestion(0);
       setCurrentSection(currentSection + 1);
     } else {
-      // Last question reached - Handle submission or display completion message
-      alert("You have completed the intake! Thank you for your responses.");
-      console.log("Final Form Data:", formData);
-      // You can also send formData to a database or another API endpoint here
+      // Last question reached - now call handleSubmit
+      handleSubmit();
     }
   };
   return (
