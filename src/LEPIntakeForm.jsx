@@ -169,35 +169,38 @@ const LEPIntakeForm = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
-    if (e) e.preventDefault();
-    console.log("🚀 Form submission started...");
-    console.log("📤 Form Data:", formData);
-  
-    try {
-      const response = await fetch("/api/analyze-leadership", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-  
-      console.log("🔍 Fetch request sent...");
-  
-      if (!response.ok) {
-        throw new Error(`Server responded with ${response.status}`);
-      }
-  
-      const result = await response.json();
-      console.log("✅ AI Analysis Result:", result);
-  
-      alert("Analysis Complete! Check console for results.");
-    } catch (error) {
-      console.error("❌ Error submitting form:", error);
-      alert("There was an issue submitting the form.");
+const [analysisResult, setAnalysisResult] = useState(null);
+
+const handleSubmit = async (e) => {
+  if (e) e.preventDefault();
+  console.log("🚀 Form submission started...");
+  console.log("📤 Form Data:", formData);
+
+  try {
+    const response = await fetch("/api/analyze-leadership", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+
+    console.log("🔍 Fetch request sent...");
+
+    if (!response.ok) {
+      throw new Error(`Server responded with ${response.status}`);
     }
-  };
+
+    const result = await response.json();
+    console.log("✅ AI Analysis Result:", result);
+
+    setAnalysisResult(result.analysis); // Store the AI response in state
+
+  } catch (error) {
+    console.error("❌ Error submitting form:", error);
+    alert("There was an issue submitting the form.");
+  }
+};
   
   const handleNext = async () => {
     const totalSections = sections.length;
@@ -222,7 +225,7 @@ const LEPIntakeForm = () => {
         backgroundPosition: "center", 
         backgroundRepeat: "no-repeat",
         minHeight: "100vh",
-    width: "100vw" 
+        width: "100vw" 
       }}
     >
       <div className="card shadow-lg p-5" style={{ maxWidth: "600px", width: "100%" }}>
@@ -231,7 +234,9 @@ const LEPIntakeForm = () => {
         </div>
   
         <div className="mb-4">
-          <label className="form-label fw-semibold">{sections[currentSection].questions[currentQuestion].prompt}</label>
+          <label className="form-label fw-semibold">
+            {sections[currentSection].questions[currentQuestion].prompt}
+          </label>
   
           {(() => {
             const q = sections[currentSection].questions[currentQuestion];
@@ -257,6 +262,7 @@ const LEPIntakeForm = () => {
                 </div>
               ));
             }
+  
             if (q.type === "likert") {
               return (
                 <div className="d-flex flex-column">
@@ -313,15 +319,20 @@ const LEPIntakeForm = () => {
         </div>
   
         <button 
-  onClick={handleNext} 
-  className="btn w-100 py-2 fw-bold rounded-pill shadow-sm" 
-  style={{ backgroundColor: "#212A37", color: "#FFFFFF", border: "none" }}>
-  Next
-</button>
-
+          onClick={handleNext} 
+          className="btn w-100 py-2 fw-bold rounded-pill shadow-sm" 
+          style={{ backgroundColor: "#212A37", color: "#FFFFFF", border: "none" }}
+        >
+          Next
+        </button>
+  
+        {/* AI Analysis Display */}
+        {analysisResult && (
+          <div className="mt-4 p-3 bg-light border rounded">
+            <h4 className="fw-bold">AI Leadership Analysis</h4>
+            <p>{analysisResult}</p>
+          </div>
+        )}
       </div>
-      </div>
+    </div>
   );
-};
-
-export default LEPIntakeForm;
