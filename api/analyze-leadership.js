@@ -20,10 +20,10 @@ export default async function handler(req, res) { // Make sure req and res are p
 
         const response = await openai.chat.completions.create({
             model: "gpt-4",
-            max_tokens: 400, // Limits output length for faster responses
+            max_tokens: 200, // Limits output length for faster responses
             messages: [
                 { role: "system", content: "Analyze leadership traits based on user input and provide improvement recommendations." },
-                { role: "user", content: `User responses: ${JSON.stringify(req.body)}. Based on this data, provide aninsightful summary of this leaders strengths and possible blind spots or development opportunities. Frame your response in a concise manner that makes the user feel seen, understood, and challenged.` }
+                { role: "user", content: `User responses: ${JSON.stringify(req.body)}. Based on this data, provide aninsightful summary of possible blind spots or development opportunities. Frame your response in a concise manner that makes the user feel seen, understood, and challenged.` }
             ],
         });
 
