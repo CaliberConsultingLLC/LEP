@@ -49,7 +49,7 @@ const sections = [
       {
         id: "leadershipChallenge",
         prompt: "What’s your biggest leadership challenge today?",
-        type: "dropdown",
+        type: "radio",
         options: [
           "Decision-making", "Influence", "Conflict Resolution",
           "Time Management", "Delegation", "Emotional Intelligence",
@@ -75,11 +75,7 @@ const sections = [
           "Re-evaluate priorities", "Consult the team for solutions",
         ],
       },
-      {
-        id: "feedbackResponse",
-        prompt: "You receive critical feedback from a team member. How do you respond?",
-        type: "text",
-      },
+      
       {
         id: "highPerformer",
         prompt: "A high performer has disengaged recently. What do you do?",
@@ -106,12 +102,7 @@ const sections = [
           { id: "encouragement", text: "Encouragement" }
         ],
       },
-      {
-        id: "teamOpenness",
-        prompt: "Do you feel your team is open with you?",
-        type: "radio",
-        options: ["Yes", "No"],
-      },
+
     ],
   },
   {
@@ -123,11 +114,7 @@ const sections = [
         type: "radio",
         options: ["Confidence", "Empathy", "Resilience", "Vision", "Decisiveness"],
       },
-      {
-        id: "improvementGoal",
-        prompt: "What’s one skill you want to improve this year?",
-        type: "text",
-      },
+      
       {
         id: "confidenceRanking",
         prompt: "Rank the following leadership competencies in order of confidence:",

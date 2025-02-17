@@ -26,8 +26,8 @@ export default async function handler(req, res) { // Make sure req and res are p
                 { 
                     role: "user", 
                     content: `Based on these user responses: ${JSON.stringify(req.body)},
-                    determine what type of leader they might be in **one short sentence**.
-                    Then, list **three key blind spots** they should focus on, formatted as bullet points.` 
+                    share an insightful, direct summary of what type of leader I am **two short sentences**.
+                    Then, list **three potential improvement areas**, formatted as bullet points.` 
                 }
             ],
         });
