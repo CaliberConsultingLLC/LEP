@@ -170,10 +170,9 @@ const LEPIntakeForm = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     console.log("🚀 Form submission started...");
-  
-    console.log("📤 Form Data:", formData); // Logs form data before sending
+    console.log("📤 Form Data:", formData);
   
     try {
       const response = await fetch("/api/analyze-leadership", {
@@ -200,8 +199,7 @@ const LEPIntakeForm = () => {
     }
   };
   
-
-  const handleNext = () => {
+  const handleNext = async () => {
     const totalSections = sections.length;
     const totalQuestions = sections[currentSection].questions.length;
   
@@ -211,10 +209,10 @@ const LEPIntakeForm = () => {
       setCurrentQuestion(0);
       setCurrentSection(currentSection + 1);
     } else {
-      // Last question reached - now call handleSubmit
-      handleSubmit();
+      await handleSubmit(); // Ensures form submission completes before proceeding
     }
   };
+  
   return (
     <div 
       className="d-flex align-items-center justify-content-center vh-100 w-100" 
