@@ -169,6 +169,31 @@ const LEPIntakeForm = () => {
     }
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log("Submitting form:", formData);
+  
+    try {
+      const response = await fetch("/api/analyze-leadership", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+  
+      console.log("Response status:", response.status); // Debugging
+  
+      const result = await response.json();
+      console.log("AI Analysis Result:", result);
+  
+      alert("Analysis Complete! Check console for results.");
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      alert("There was an issue submitting the form.");
+    }
+  };
+
   const handleNext = () => {
     const totalSections = sections.length;
     const totalQuestions = sections[currentSection].questions.length;
