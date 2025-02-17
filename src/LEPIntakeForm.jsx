@@ -170,14 +170,21 @@ const LEPIntakeForm = () => {
   };
 
   const handleNext = () => {
-    if (sections[currentSection]) {
-      const totalQuestions = sections[currentSection].questions.length;
-      if (currentQuestion < totalQuestions - 1) {
-        setCurrentQuestion(currentQuestion + 1);
-      } else if (currentSection < sections.length - 1) {
-        setCurrentQuestion(0);
-        setCurrentSection(currentSection + 1);
-      }
+    const totalSections = sections.length;
+    const totalQuestions = sections[currentSection].questions.length;
+  
+    if (currentQuestion < totalQuestions - 1) {
+      // Move to next question within the same section
+      setCurrentQuestion(currentQuestion + 1);
+    } else if (currentSection < totalSections - 1) {
+      // Move to the next section
+      setCurrentQuestion(0);
+      setCurrentSection(currentSection + 1);
+    } else {
+      // Last question reached - Handle submission or display completion message
+      alert("You have completed the intake! Thank you for your responses.");
+      console.log("Final Form Data:", formData);
+      // You can also send formData to a database or another API endpoint here
     }
   };
   return (
