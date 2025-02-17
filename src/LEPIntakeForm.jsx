@@ -336,3 +336,6 @@ const handleSubmit = async (e) => {
       </div>
     </div>
   );
+};
+
+export default LEPIntakeForm; // ✅ Ensure the component is properly exported
