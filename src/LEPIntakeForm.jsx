@@ -280,9 +280,10 @@ const LEPIntakeForm = () => {
         <button 
   onClick={handleNext} 
   className="btn w-100 py-2 fw-bold rounded-pill shadow-sm" 
-  style={{ backgroundColor: "#FFFFFF", color: "#FFFFFF", border: "1px solid #FFFFFF" }}>
+  style={{ backgroundColor: "#212A37", color: "#FFFFFF", border: "none" }}>
   Next
 </button>
+
       </div>
       </div>
   );
