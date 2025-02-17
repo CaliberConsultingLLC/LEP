@@ -190,7 +190,7 @@ const LEPIntakeForm = () => {
         backgroundRepeat: "no-repeat" 
       }}
     >
-      <div className="card shadow-lg p-5" style={{ maxWidth: "600px", width: "100%" }}>
+      <div className="card shadow-lg p-5" style={{ maxWidth: "1800px", width: "100%" }}>
         <div className="text-center">
           <img src="/circle logo test.jpg" alt="LEP Logo" style={{ width: "150px", marginBottom: "15px" }} />
         </div>
