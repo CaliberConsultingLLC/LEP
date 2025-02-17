@@ -57,8 +57,8 @@ const sections = [
         ],
       },
       {
-        id: "teamDescription",
-        prompt: "How would you describe the state of your team currently?",
+        id: "leadershipDecision",
+        prompt: "Describe a time you had to make a difficult decision as a leader?",
         type: "text",
       },
     ],
@@ -75,7 +75,11 @@ const sections = [
           "Re-evaluate priorities", "Consult the team for solutions",
         ],
       },
-      
+      {
+        id: "leadershipReflection",
+        prompt: "If your leadership style had a ‘warning label,’ what would it say?",
+        type: "text",
+      },
       {
         id: "highPerformer",
         prompt: "A high performer has disengaged recently. What do you do?",

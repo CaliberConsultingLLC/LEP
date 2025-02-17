@@ -20,14 +20,18 @@ export default async function handler(req, res) { // Make sure req and res are p
 
         const response = await openai.chat.completions.create({
             model: "gpt-4",
-            max_tokens: 300, // Enough for a short summary + bullet points
+            max_tokens: 300, // Increase for more detailed responses
             messages: [
-                { role: "system", content: "Analyze leadership traits and provide insights." },
+                { role: "system", content: "You are an expert leadership coach. Your job is to analyze leadership traits based on user responses and provide deep, actionable insights that inspire growth." },
                 { 
                     role: "user", 
-                    content: `Based on these user responses: ${JSON.stringify(req.body)},
-                    share an insightful, direct summary of what type of leader I am **two short sentences**.
-                    Then, list **three potential improvement areas**, formatted as bullet points.` 
+                    content: `Analyze the following leadership responses: ${JSON.stringify(req.body)}.
+                    
+                    1. **Summarize** what type of leader this person might be in a compelling, emotionally engaging way.
+                    2. **Identify three blind spots** this leader might have, and suggest **specific** ways they can work on them.
+                    3. **Provide one high-impact leadership development tip** based on their responses.
+                    
+                    Ensure your response is motivational, constructive, and directly relevant to their input.` 
                 }
             ],
         });
