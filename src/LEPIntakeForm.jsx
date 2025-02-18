@@ -13,9 +13,13 @@ const sections = [
     questions: [
       {
         id: "teamSize",
-        prompt: "How many people are in your team?",
-        type: "number",
-      },
+        prompt: "On a scale from 1 to 10, how stressful do you find leadership?",
+        type: "slider",
+        min: 3,
+        max: 15,
+        step: 1, // optional, defaults to 1 if omitted
+        labels: { 1: "1", 12: "15+" }
+},
       {
         id: "leadershipExperience",
         prompt: "How many years have you been in a leadership role?",
@@ -120,14 +124,11 @@ const sections = [
       },
       
       {
-        id: "confidenceRanking",
-        prompt: "Rank the following leadership competencies in order of confidence:",
-        type: "ranking",
-        options: [
-          { id: "decision-making", text: "Decision-making" },
-          { id: "adaptability", text: "Adaptability" },
-          { id: "conflict-resolution", text: "Conflict resolution" }
-        ],
+        id: "confidenceMatrix",
+        prompt: "Rate your skill in each of these leadership areas:",
+        type: "matrix",
+        rows: ["Decision-making", "Conflict Resolution", "Delegation"],
+        columns: ["Poor", "Average", "Good", "Excellent"]
       },
     ],
   },
@@ -253,7 +254,28 @@ const handleSubmit = async (e) => {
                 </div>
               ));
             }
-  
+            if (q.type === "slider") {
+              return (
+                <div className="d-flex flex-column">
+                  <input
+                    type="range"
+                    name={q.id}
+                    min={q.min}
+                    max={q.max}
+                    step={q.step || 1}
+                    value={formData[q.id] || q.min}
+                    onChange={(e) => handleChange(q.id, e.target.value)}
+                    className="form-range"
+                  />
+                  <div className="d-flex justify-content-between mt-2">
+                    <span>{q.labels?.[q.min] || q.min}</span>
+                    <span>{formData[q.id] || q.min}</span>
+                    <span>{q.labels?.[q.max] || q.max}</span>
+                  </div>
+                </div>
+              );
+            }
+
             if (q.type === "likert") {
               return (
                 <div className="d-flex flex-column">
@@ -278,7 +300,37 @@ const handleSubmit = async (e) => {
                 </div>
               );
             }
-  
+
+            if (q.type === "matrix") {
+              return (
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th></th>
+                      {q.columns.map((col) => (
+                        <th key={col}>{col}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {q.rows.map((row) => (
+                      <tr key={row}>
+                        <td>{row}</td>
+                        {q.columns.map((col) => (
+                          <td key={col}>
+                            <input
+                              type="radio"
+                              name={`${q.id}-${row}`}
+                              onChange={() => handleChange(`${q.id}-${row}`, col)}
+                            />
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              );
+            }
             if (q.type === "multi-select") {
               return (
                 <div className="row">
