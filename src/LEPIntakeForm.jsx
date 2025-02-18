@@ -211,7 +211,7 @@ const handleSubmit = async (e) => {
     <div 
       className="d-flex align-items-center justify-content-center vh-100 w-100" 
       style={{ 
-        backgroundImage: "url('/LEP Background 3.jpg')", 
+        backgroundImage: "url('/LEP Background 5.jpg')", 
         backgroundSize: "cover", 
         backgroundPosition: "center", 
         backgroundRepeat: "no-repeat",
