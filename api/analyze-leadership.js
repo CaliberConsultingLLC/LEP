@@ -19,8 +19,8 @@ export default async function handler(req, res) { // Make sure req and res are p
         console.log("Calling OpenAI API...");
 
         const response = await openai.chat.completions.create({
-            model: "gpt-4",
-            max_tokens: 250, // Increase for more detailed responses
+            model: "gpt-3.5-turbo",
+            max_tokens: 300, // Increase for more detailed responses
             messages: [
                 { role: "system", content: "You are an expert leadership coach. Your job is to analyze leadership traits based on user responses and provide deep, actionable insights that inspire growth." },
                 { 
