@@ -13,7 +13,7 @@ const sections = [
     questions: [
       {
         id: "teamSize",
-        prompt: "On a scale from 1 to 10, how stressful do you find leadership?",
+        prompt: "How many people do you directly manage?",
         type: "slider",
         min: 3,
         max: 15,

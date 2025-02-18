@@ -20,18 +20,18 @@ export default async function handler(req, res) { // Make sure req and res are p
 
         const response = await openai.chat.completions.create({
             model: "gpt-4",
-            max_tokens: 200, // Increase for more detailed responses
+            max_tokens: 250, // Increase for more detailed responses
             messages: [
                 { role: "system", content: "You are an expert leadership coach. Your job is to analyze leadership traits based on user responses and provide deep, actionable insights that inspire growth." },
                 { 
                     role: "user", 
                     content: `Analyze the following leadership responses: ${JSON.stringify(req.body)}.
                     
-                    1. **Summarize** what type of leader this person might be in a compelling, emotionally engaging way.
-                    2. **Identify three blind spots** this leader might have, and suggest **specific** ways they can work on them.
-                    3. **Provide one high-impact leadership development tip** based on their responses.
+                    1. Characterize this leader in 1-2 short sentences. The purpose of this is for them to feel seen/valued.
+                    2. Identify 2-3blind spots this leader might have, along with prevalent examples in the form of "This might look like..." or something similar.
+                    3. Provide one high-impact leadership development tip based on their responses.
                     
-                    Ensure your response is motivational, constructive, and directly relevant to their input.` 
+                    Ensure your response is positive, constructive, and directly relevant to their input.` 
                 }
             ],
         });
