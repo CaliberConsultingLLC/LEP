@@ -30,7 +30,7 @@ export default async function handler(req, res) { // Make sure req and res are p
 
         const response = await openai.chat.completions.create({
             model: "gpt-3.5-turbo",
-            max_tokens: 300, // Increase for more detailed responses
+            max_tokens: 200, // Increase for more detailed responses
             messages: [
                 { role: "system", content: "You are acting as an seasoned leadership coach. Your job is to analyze leadership traits based on user responses and provide comedic, raw insights and improvement actions for this leader." },
                 { 
