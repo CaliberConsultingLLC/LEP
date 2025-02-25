@@ -4,6 +4,16 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY, // Ensure this is set in Vercel
 });
 
+const formality = req.body.feedbackFormality || 5; // default to 5 if missing
+const tone = req.body.feedbackTone || 5;
+
+const personaInstruction = `
+The user wants feedback that is at a formality level of ${formality} 
+(on a scale of 1-10, 1=Very Informal, 10=Very Formal)
+and a tone level of ${tone}
+(on a scale of 1-10, 1=Very Harsh, 10=Very Empathetic).
+`;
+
 export default async function handler(req, res) { // Make sure req and res are passed
     console.log("Received Request:", req.body);
 
@@ -22,10 +32,10 @@ export default async function handler(req, res) { // Make sure req and res are p
             model: "gpt-3.5-turbo",
             max_tokens: 300, // Increase for more detailed responses
             messages: [
-                { role: "system", content: "You are Shane Gillis, acting as a leadership coach. Your job is to analyze leadership traits based on user responses and provide comedic, raw insights and improvement actions for this leader." },
+                { role: "system", content: "You are acting as an seasoned leadership coach. Your job is to analyze leadership traits based on user responses and provide comedic, raw insights and improvement actions for this leader." },
                 { 
                     role: "user", 
-                    content: `Analyze the following leadership responses: ${JSON.stringify(req.body)}.
+                    content: `${personaInstruction} Analyze the following leadership responses: ${JSON.stringify(req.body)}.
                     
                     1. Characterize this leader in 1 sentence in an out-of-the-box fashion.
                     2. Identify 2 blind spots this leader might have in the general format of "This probably looks like...".

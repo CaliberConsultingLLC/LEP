@@ -130,6 +130,26 @@ const sections = [
         rows: ["Decision-making", "Conflict Resolution", "Delegation"],
         columns: ["Poor", "Average", "Good", "Excellent"]
       },
+
+      {
+        id: "feedbackFormality",
+        prompt: "How formal do you want your feedback to be?",
+        type: "slider",
+        min: 1,
+        max: 10,
+        step: 1,
+        labels: { 1: "Very Informal", 10: "Very Formal" }
+      },
+
+      {
+        id: "feedbackTone",
+        prompt: "How empathetic do you want your feedback to be?",
+        type: "slider",
+        min: 1,
+        max: 10,
+        step: 1,
+        labels: { 1: "Very Harsh", 10: "Very Empathetic" }
+      }
     ],
   },
 ];
