@@ -198,7 +198,7 @@ const sections = [
 const LEPIntakeForm = () => {
   const [formData, setFormData] = useState({});
   const [currentSection, setCurrentSection] = useState(0);
-  const [currentQuestion, setCurrentQuestion] = useState(0);
+
 
   const handleChange = (id, value, isMultiSelect = false) => {
     setFormData((prev) => ({
@@ -247,7 +247,7 @@ const handleSubmit = async (e) => {
     const result = await response.json();
     console.log("✅ AI Analysis Result:", result);
 
-    setAnalysisResult(result.analysis); // Store the AI response in state
+    window.location.href = `/results?analysis=${encodeURIComponent(result.analysis)}`;
 
   } catch (error) {
     console.error("❌ Error submitting form:", error);
@@ -255,45 +255,37 @@ const handleSubmit = async (e) => {
   }
 };
   
-  const handleNext = async () => {
-    const totalSections = sections.length;
-    const totalQuestions = sections[currentSection].questions.length;
-  
-    if (currentQuestion < totalQuestions - 1) {
-      setCurrentQuestion(currentQuestion + 1);
-    } else if (currentSection < totalSections - 1) {
-      setCurrentQuestion(0);
+const handleNext = async () => {
+  if (currentSection < sections.length - 1) {
       setCurrentSection(currentSection + 1);
-    } else {
-      await handleSubmit(); // Ensures form submission completes before proceeding
-    }
-  };
+  } else {
+      await handleSubmit(); // Ensures form submission completes at the end
+  }
+};
   
-  return (
-    <div 
-      className="d-flex align-items-center justify-content-center vh-100 w-100" 
-      style={{ 
-        backgroundImage: "url('/LEP Background 5.jpg')", 
-        backgroundSize: "cover", 
-        backgroundPosition: "center", 
-        backgroundRepeat: "no-repeat",
-        minHeight: "100vh",
-        width: "100vw" 
-      }}
-    >
-      <div className="card shadow-lg p-5" style={{ maxWidth: "600px", width: "100%" }}>
-        <div className="text-center">
-          <img src="/circle logo test.jpg" alt="LEP Logo" style={{ width: "150px", marginBottom: "15px" }} />
-        </div>
-  
-        <div className="mb-4">
-          <label className="form-label fw-semibold">
-            {sections[currentSection].questions[currentQuestion].prompt}
-          </label>
-  
+return (
+  <div 
+    className="d-flex align-items-center justify-content-center vh-100 w-100" 
+    style={{ 
+      backgroundImage: "url('/LEP Background 5.jpg')", 
+      backgroundSize: "cover", 
+      backgroundPosition: "center", 
+      backgroundRepeat: "no-repeat",
+      minHeight: "100vh",
+      width: "100vw" 
+    }}
+  >
+    <div className="card shadow-lg p-5" style={{ maxWidth: "600px", width: "100%" }}>
+      <div className="text-center">
+        <img src="/circle logo test.jpg" alt="LEP Logo" style={{ width: "150px", marginBottom: "15px" }} />
+      </div>
+
+      {/* Loop through all questions in the current section */}
+      {sections[currentSection].questions.map((q) => (
+        <div key={q.id} className="mb-4">
+          <label className="form-label fw-semibold">{q.prompt}</label>
+
           {(() => {
-            const q = sections[currentSection].questions[currentQuestion];
-  
             if (q.type === "ranking") {
               return (
                 <DndContext collisionDetection={closestCenter} onDragEnd={(event) => handleDragEnd(event, q.id)}>
@@ -307,14 +299,22 @@ const handleSubmit = async (e) => {
                 </DndContext>
               );
             }
-  
+
             if (q.type === "radio") {
               return q.options.map((opt) => (
                 <div key={opt}>
-                  <input type="radio" name={q.id} value={opt} onChange={() => handleChange(q.id, opt)} /> {opt}
+                  <input
+                    type="radio"
+                    name={q.id}
+                    value={opt}
+                    checked={formData[q.id] === opt}
+                    onChange={() => handleChange(q.id, opt)}
+                  />{" "}
+                  {opt}
                 </div>
               ));
             }
+
             if (q.type === "slider") {
               return (
                 <div className="d-flex flex-column">
@@ -351,6 +351,7 @@ const handleSubmit = async (e) => {
                           type="radio"
                           name={q.id}
                           value={value}
+                          checked={formData[q.id] === value}
                           onChange={() => handleChange(q.id, value)}
                           style={{ marginRight: "5px" }}
                         />
@@ -382,6 +383,7 @@ const handleSubmit = async (e) => {
                             <input
                               type="radio"
                               name={`${q.id}-${row}`}
+                              checked={formData[`${q.id}-${row}`] === col}
                               onChange={() => handleChange(`${q.id}-${row}`, col)}
                             />
                           </td>
@@ -392,6 +394,7 @@ const handleSubmit = async (e) => {
                 </table>
               );
             }
+
             if (q.type === "multi-select") {
               return (
                 <div className="row">
@@ -417,34 +420,41 @@ const handleSubmit = async (e) => {
                 </div>
               );
             }
-  
-            return <textarea className="form-control" onChange={(e) => handleChange(q.id, e.target.value)} />;
+
+            return (
+              <textarea
+                className="form-control"
+                value={formData[q.id] || ""}
+                onChange={(e) => handleChange(q.id, e.target.value)}
+              />
+            );
           })()}
         </div>
-  
-        <button 
-          onClick={handleNext} 
-          className="btn w-100 py-2 fw-bold rounded-pill shadow-sm" 
-          style={{ backgroundColor: "#212A37", color: "#FFFFFF", border: "none" }}
-        >
-          Next
-        </button>
-  
-        {/* AI Analysis Display */}
-        {analysisResult && (
-  <div className="mt-4 p-3 bg-light border rounded">
-    <h4 className="fw-bold">AI Leadership Analysis</h4>
-    <p><strong>{analysisResult.split("\n")[0]}</strong></p> {/* Extract summary */}
-    <ul>
-      {analysisResult.split("\n").slice(1).map((point, index) => (
-        point.trim() && <li key={index}>{point}</li>
       ))}
-    </ul>
-  </div>
-)}
-      </div>
+
+      <button 
+        onClick={handleNext} 
+        className="btn w-100 py-2 fw-bold rounded-pill shadow-sm" 
+        style={{ backgroundColor: "#212A37", color: "#FFFFFF", border: "none" }}
+      >
+        Next
+      </button>
+
+      {/* AI Analysis Display */}
+      {analysisResult && (
+        <div className="mt-4 p-3 bg-light border rounded">
+          <h4 className="fw-bold">AI Leadership Analysis</h4>
+          <p><strong>{analysisResult.split("\n")[0]}</strong></p>
+          <ul>
+            {analysisResult.split("\n").slice(1).map((point, index) => (
+              point.trim() && <li key={index}>{point}</li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
-  );
+  </div>
+);
 };
 
 export default LEPIntakeForm; // ✅ Ensure the component is properly exported

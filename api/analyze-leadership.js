@@ -37,7 +37,7 @@ and a tone level of ${tone}
       messages: [
         {
           role: "system",
-          content: "You are acting as a seasoned leadership coach..."
+          content: "You are acting as a seasoned leadership coach giving insight to a leader who wants to get better..."
         },
         {
           role: "user",
