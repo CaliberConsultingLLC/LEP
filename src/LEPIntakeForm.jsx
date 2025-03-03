@@ -6,6 +6,7 @@ import { DndContext, closestCenter } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { arrayMove } from "@dnd-kit/sortable";
 import SortableItem from "./components/SortableItem.jsx";
+import { useNavigate } from "react-router-dom";
 
 const sections = [
   {
@@ -199,6 +200,7 @@ const LEPIntakeForm = () => {
   const [formData, setFormData] = useState({});
   const [currentSection, setCurrentSection] = useState(0);
 
+  const navigate = useNavigate();
 
   const handleChange = (id, value, isMultiSelect = false) => {
     setFormData((prev) => ({
@@ -230,28 +232,27 @@ const handleSubmit = async (e) => {
   console.log("📤 Form Data:", formData);
 
   try {
-    const response = await fetch("/api/analyze-leadership", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    });
+      const response = await fetch("/api/analyze-leadership", {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+      });
 
-    console.log("🔍 Fetch request sent...");
+      if (!response.ok) {
+          throw new Error(`Server responded with ${response.status}`);
+      }
 
-    if (!response.ok) {
-      throw new Error(`Server responded with ${response.status}`);
-    }
+      const result = await response.json();
+      console.log("✅ AI Analysis Result:", result);
 
-    const result = await response.json();
-    console.log("✅ AI Analysis Result:", result);
-
-    window.location.href = `/results?analysis=${encodeURIComponent(result.analysis)}`;
+      // Correct navigation with data
+      navigate("/results", { state: { analysis: result.analysis } });
 
   } catch (error) {
-    console.error("❌ Error submitting form:", error);
-    alert("There was an issue submitting the form.");
+      console.error("❌ Error submitting form:", error);
+      alert("There was an issue submitting the form.");
   }
 };
   
