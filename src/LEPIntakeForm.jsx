@@ -262,7 +262,152 @@ const handleNext = async () => {
       await handleSubmit(); // Ensures form submission completes at the end
   }
 };
-  
+ 
+const renderQuestion = (q) => {
+  if (q.type === "ranking") {
+      return (
+          <DndContext collisionDetection={closestCenter} onDragEnd={(event) => handleDragEnd(event, q.id)}>
+              <SortableContext items={formData[q.id] || q.options} strategy={verticalListSortingStrategy}>
+                  {(formData[q.id] || q.options).map((item) => (
+                      <SortableItem key={item.id} id={item.id}>
+                          {item.text}
+                      </SortableItem>
+                  ))}
+              </SortableContext>
+          </DndContext>
+      );
+  }
+
+  if (q.type === "radio") {
+      return q.options.map((opt) => (
+          <div key={opt}>
+              <input 
+                  type="radio" 
+                  name={q.id} 
+                  value={opt} 
+                  checked={formData[q.id] === opt} 
+                  onChange={() => handleChange(q.id, opt)} 
+              /> {opt}
+          </div>
+      ));
+  }
+
+  if (q.type === "slider") {
+      return (
+          <div className="d-flex flex-column">
+              <input
+                  type="range"
+                  name={q.id}
+                  min={q.min}
+                  max={q.max}
+                  step={q.step || 1}
+                  value={formData[q.id] || q.min}
+                  onChange={(e) => handleChange(q.id, e.target.value)}
+                  className="form-range"
+              />
+              <div className="d-flex justify-content-between mt-2">
+                  <span>{q.labels?.[q.min] || q.min}</span>
+                  <span>{formData[q.id] || q.min}</span>
+                  <span>{q.labels?.[q.max] || q.max}</span>
+              </div>
+          </div>
+      );
+  }
+
+  if (q.type === "likert") {
+      return (
+          <div className="d-flex flex-column">
+              <div className="d-flex justify-content-between mb-2">
+                  <span>{q.labels?.[q.scale[0]] || q.scale[0]}</span>
+                  <span>{q.labels?.[q.scale[q.scale.length - 1]] || q.scale[q.scale.length - 1]}</span>
+              </div>
+              <div className="d-flex justify-content-between">
+                  {q.scale.map((value) => (
+                      <label key={value} className="text-center">
+                          <input
+                              type="radio"
+                              name={q.id}
+                              value={value}
+                              checked={formData[q.id] === value}
+                              onChange={() => handleChange(q.id, value)}
+                              style={{ marginRight: "5px" }}
+                          />
+                          {value}
+                      </label>
+                  ))}
+              </div>
+          </div>
+      );
+  }
+
+  if (q.type === "matrix") {
+      return (
+          <table className="table">
+              <thead>
+                  <tr>
+                      <th></th>
+                      {q.columns.map((col) => (
+                          <th key={col}>{col}</th>
+                      ))}
+                  </tr>
+              </thead>
+              <tbody>
+                  {q.rows.map((row) => (
+                      <tr key={row}>
+                          <td>{row}</td>
+                          {q.columns.map((col) => (
+                              <td key={col}>
+                                  <input
+                                      type="radio"
+                                      name={`${q.id}-${row}`}
+                                      checked={formData[`${q.id}-${row}`] === col}
+                                      onChange={() => handleChange(`${q.id}-${row}`, col)}
+                                  />
+                              </td>
+                          ))}
+                      </tr>
+                  ))}
+              </tbody>
+          </table>
+      );
+  }
+
+  if (q.type === "multi-select") {
+      return (
+          <div className="row">
+              {q.options.map((opt) => (
+                  <div key={opt} className="col-md-4 d-flex align-items-center">
+                      <input
+                          type="checkbox"
+                          name={q.id}
+                          value={opt}
+                          checked={formData[q.id]?.includes(opt) || false}
+                          onChange={(e) => {
+                              const selected = formData[q.id] || [];
+                              if (e.target.checked && selected.length < q.limit) {
+                                  handleChange(q.id, [...selected, opt]);
+                              } else if (!e.target.checked) {
+                                  handleChange(q.id, selected.filter(item => item !== opt));
+                              }
+                          }}
+                      />
+                      <label className="ms-2">{opt}</label>
+                  </div>
+              ))}
+          </div>
+      );
+  }
+
+  return (
+      <textarea
+          className="form-control"
+          value={formData[q.id] || ""}
+          onChange={(e) => handleChange(q.id, e.target.value)}
+      />
+  );
+};
+
+
 return (
   <div 
     className="d-flex align-items-center justify-content-center vh-100 w-100" 
@@ -275,7 +420,7 @@ return (
       width: "100vw" 
     }}
   >
-    <div className="card shadow-lg p-5" style={{ maxWidth: "600px", width: "100%" }}>
+    <div className="card shadow-lg p-5" style={{ maxWidth: "600px", width: "100%", minHeight: "400px", maxHeight: "85vh", overflowY: "auto" }}>
       <div className="text-center">
         <img src="/circle logo test.jpg" alt="LEP Logo" style={{ width: "150px", marginBottom: "15px" }} />
       </div>
@@ -285,150 +430,8 @@ return (
         <div key={q.id} className="mb-4">
           <label className="form-label fw-semibold">{q.prompt}</label>
 
-          {(() => {
-            if (q.type === "ranking") {
-              return (
-                <DndContext collisionDetection={closestCenter} onDragEnd={(event) => handleDragEnd(event, q.id)}>
-                  <SortableContext items={formData[q.id] || q.options} strategy={verticalListSortingStrategy}>
-                    {(formData[q.id] || q.options).map((item) => (
-                      <SortableItem key={item.id} id={item.id}>
-                        {item.text}
-                      </SortableItem>
-                    ))}
-                  </SortableContext>
-                </DndContext>
-              );
-            }
-
-            if (q.type === "radio") {
-              return q.options.map((opt) => (
-                <div key={opt}>
-                  <input
-                    type="radio"
-                    name={q.id}
-                    value={opt}
-                    checked={formData[q.id] === opt}
-                    onChange={() => handleChange(q.id, opt)}
-                  />{" "}
-                  {opt}
-                </div>
-              ));
-            }
-
-            if (q.type === "slider") {
-              return (
-                <div className="d-flex flex-column">
-                  <input
-                    type="range"
-                    name={q.id}
-                    min={q.min}
-                    max={q.max}
-                    step={q.step || 1}
-                    value={formData[q.id] || q.min}
-                    onChange={(e) => handleChange(q.id, e.target.value)}
-                    className="form-range"
-                  />
-                  <div className="d-flex justify-content-between mt-2">
-                    <span>{q.labels?.[q.min] || q.min}</span>
-                    <span>{formData[q.id] || q.min}</span>
-                    <span>{q.labels?.[q.max] || q.max}</span>
-                  </div>
-                </div>
-              );
-            }
-
-            if (q.type === "likert") {
-              return (
-                <div className="d-flex flex-column">
-                  <div className="d-flex justify-content-between mb-2">
-                    <span>{q.labels?.[q.scale[0]] || q.scale[0]}</span>
-                    <span>{q.labels?.[q.scale[q.scale.length - 1]] || q.scale[q.scale.length - 1]}</span>
-                  </div>
-                  <div className="d-flex justify-content-between">
-                    {q.scale.map((value) => (
-                      <label key={value} className="text-center">
-                        <input
-                          type="radio"
-                          name={q.id}
-                          value={value}
-                          checked={formData[q.id] === value}
-                          onChange={() => handleChange(q.id, value)}
-                          style={{ marginRight: "5px" }}
-                        />
-                        {value}
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              );
-            }
-
-            if (q.type === "matrix") {
-              return (
-                <table className="table">
-                  <thead>
-                    <tr>
-                      <th></th>
-                      {q.columns.map((col) => (
-                        <th key={col}>{col}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {q.rows.map((row) => (
-                      <tr key={row}>
-                        <td>{row}</td>
-                        {q.columns.map((col) => (
-                          <td key={col}>
-                            <input
-                              type="radio"
-                              name={`${q.id}-${row}`}
-                              checked={formData[`${q.id}-${row}`] === col}
-                              onChange={() => handleChange(`${q.id}-${row}`, col)}
-                            />
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              );
-            }
-
-            if (q.type === "multi-select") {
-              return (
-                <div className="row">
-                  {q.options.map((opt) => (
-                    <div key={opt} className="col-md-4 d-flex align-items-center">
-                      <input
-                        type="checkbox"
-                        name={q.id}
-                        value={opt}
-                        checked={formData[q.id]?.includes(opt) || false}
-                        onChange={(e) => {
-                          const selected = formData[q.id] || [];
-                          if (e.target.checked && selected.length < q.limit) {
-                            handleChange(q.id, [...selected, opt]);
-                          } else if (!e.target.checked) {
-                            handleChange(q.id, selected.filter(item => item !== opt));
-                          }
-                        }}
-                      />
-                      <label className="ms-2">{opt}</label>
-                    </div>
-                  ))}
-                </div>
-              );
-            }
-
-            return (
-              <textarea
-                className="form-control"
-                value={formData[q.id] || ""}
-                onChange={(e) => handleChange(q.id, e.target.value)}
-              />
-            );
-          })()}
+          {/* Use a dedicated renderQuestion function to handle types */}
+          {renderQuestion(q)}
         </div>
       ))}
 

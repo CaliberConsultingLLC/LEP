@@ -5,8 +5,6 @@ const openai = new OpenAI({
 });
 
 export default async function handler(req, res) {
-  // Now 'req' is defined
-
   console.log("Received Request:", req.body);
 
   if (req.method !== "POST") {
@@ -17,14 +15,13 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "No data received" });
   }
 
-  // Move them here so 'req' is in scope:
   const formality = req.body.feedbackFormality || 5;
   const tone = req.body.feedbackTone || 5;
 
   const personaInstruction = `
-The user wants feedback that is at a formality level of ${formality}
+The user wants feedback at a formality level of ${formality} 
 (on a scale of 1-10, 1=Very Informal, 10=Very Formal)
-and a tone level of ${tone}
+and a tone level of ${tone} 
 (on a scale of 1-10, 1=Very Harsh, 10=Very Empathetic).
 `;
 
@@ -37,16 +34,22 @@ and a tone level of ${tone}
       messages: [
         {
           role: "system",
-          content: "You are acting as a seasoned leadership coach giving insight to a leader who wants to get better..."
+          content: "You are a seasoned leadership coach. Your job is to analyze leadership responses and provide feedback in the user's preferred formality and empathy level. Please follow this exact format in your response, using clear section headers and bullet points."
         },
         {
           role: "user",
           content: `${personaInstruction} Analyze the following leadership responses: ${JSON.stringify(req.body)}.
 
-1. Characterize this leader in 1 sentence...
-3. Identify 3 leadership traits that are likely skilled in...
-2. Identify 5 leadership traits they likely struggle with...
-3. Provide one leadership development tip...
+1. Characterize this leader [Summary Line]
+2. Identify 2 leadership traits they are likely skilled in, with a brief description:
+- Leadership Trait 1: [description]
+- Leadership Trait 2: [description]
+3. Identify 3 likely blind spots, with brief descriptions:
+- Blind Spot 1: [description]
+- Blind Spot 2: [description]
+- Blind Spot 3: [description]
+4. Provide one high-impact leadership development tip:
+- Tip: [description]
 `
         }
       ],
