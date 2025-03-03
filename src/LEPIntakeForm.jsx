@@ -242,7 +242,7 @@ const LEPIntakeForm = () => {
         sessionStorage.setItem("analysis", result.analysis);
 
         // ✅ THIS is where navigate() should be
-        navigate("/src", { state: { analysis: result.analysis } });
+        navigate("/results", { state: { analysis: result.analysis } });
 
     } catch (error) {
         console.error("❌ Error submitting form:", error);
