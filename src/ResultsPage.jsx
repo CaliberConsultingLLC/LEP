@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 const ResultsPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { analysisResult } = location.state || {};
+  const analysis = location.state?.analysis;
 
   if (!analysisResult) {
     return (

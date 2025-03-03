@@ -223,27 +223,32 @@ const LEPIntakeForm = () => {
     console.log("📤 Form Data:", formData);
 
     try {
-      const response = await fetch("/api/analyze-leadership", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+        const response = await fetch("/api/analyze-leadership", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+        });
 
-      if (!response.ok) {
-        throw new Error(`Server responded with ${response.status}`);
-      }
+        if (!response.ok) {
+            throw new Error(`Server responded with ${response.status}`);
+        }
 
-      const result = await response.json();
-      console.log("✅ AI Analysis Result:", result);
+        const result = await response.json();
+        console.log("✅ AI Analysis Result:", result);
 
-      // Navigate to results page with analysis data
-      navigate("/results", { state: { analysis: result.analysis } });
+        // Save to sessionStorage for refresh-proofing
+        sessionStorage.setItem("analysis", result.analysis);
+
+        // ✅ THIS is where navigate() should be
+        navigate("/results", { state: { analysis: result.analysis } });
 
     } catch (error) {
-      console.error("❌ Error submitting form:", error);
-      alert("There was an issue submitting the form.");
+        console.error("❌ Error submitting form:", error);
+        alert("There was an issue submitting the form.");
     }
-  };
+};
 
   const handleNext = async () => {
     if (currentSection < sections.length - 1) {
