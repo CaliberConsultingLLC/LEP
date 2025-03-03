@@ -1,12 +1,10 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { db } from "./firebase";
-import { collection, addDoc } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { arrayMove } from "@dnd-kit/sortable";
 import SortableItem from "./components/SortableItem.jsx";
-import { useNavigate } from "react-router-dom";
 
 const sections = [
   {
@@ -34,7 +32,7 @@ const sections = [
         options: [
           "Assertive", "Supportive", "Strategic", "Adaptive", "Decisive",
           "Collaborative", "Visionary", "Empathetic", "Analytical",
-          "Pragmatic", "Inspirational", "Resilient",
+          "Pragmatic", "Inspirational", "Resilient"
         ],
         limit: 3,
       },
@@ -60,7 +58,7 @@ const sections = [
           "Building a team people would fight to join"
         ]
       }
-    ],
+    ]
   },
   {
     title: "Leadership in Action",
@@ -109,11 +107,7 @@ const sections = [
           "Contains 100% unfiltered honesty, no preservatives"
         ]
       },
-      {
-        id: "leadershipDecision",
-        prompt: "Describe a time you had to make a difficult decision as a leader.",
-        type: "text",
-      },
+    
       {
         id: "stressfulTask",
         prompt: "Which leadership task quietly (or loudly) stresses you out the most?",
@@ -194,7 +188,7 @@ const sections = [
       }
     ],
   },
-]; 
+];
 
 const LEPIntakeForm = () => {
   const [formData, setFormData] = useState({});
@@ -209,7 +203,6 @@ const LEPIntakeForm = () => {
     }));
   };
 
-  // Restored correct ranking logic
   const handleDragEnd = (event, id) => {
     const { active, over } = event;
     if (active.id !== over.id) {
@@ -224,241 +217,125 @@ const LEPIntakeForm = () => {
     }
   };
 
-const [analysisResult, setAnalysisResult] = useState(null);
+  const handleSubmit = async (e) => {
+    if (e) e.preventDefault();
+    console.log("🚀 Form submission started...");
+    console.log("📤 Form Data:", formData);
 
-const handleSubmit = async (e) => {
-  if (e) e.preventDefault();
-  console.log("🚀 Form submission started...");
-  console.log("📤 Form Data:", formData);
-
-  try {
+    try {
       const response = await fetch("/api/analyze-leadership", {
-          method: "POST",
-          headers: {
-              "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
       });
 
       if (!response.ok) {
-          throw new Error(`Server responded with ${response.status}`);
+        throw new Error(`Server responded with ${response.status}`);
       }
 
       const result = await response.json();
       console.log("✅ AI Analysis Result:", result);
 
-      // Correct navigation with data
+      // Navigate to results page with analysis data
       navigate("/results", { state: { analysis: result.analysis } });
 
-  } catch (error) {
+    } catch (error) {
       console.error("❌ Error submitting form:", error);
       alert("There was an issue submitting the form.");
-  }
-};
-  
-const handleNext = async () => {
-  if (currentSection < sections.length - 1) {
+    }
+  };
+
+  const handleNext = async () => {
+    if (currentSection < sections.length - 1) {
       setCurrentSection(currentSection + 1);
-  } else {
-      await handleSubmit(); // Ensures form submission completes at the end
-  }
-};
- 
-const renderQuestion = (q) => {
-  if (q.type === "ranking") {
-      return (
-          <DndContext collisionDetection={closestCenter} onDragEnd={(event) => handleDragEnd(event, q.id)}>
-              <SortableContext items={formData[q.id] || q.options} strategy={verticalListSortingStrategy}>
-                  {(formData[q.id] || q.options).map((item) => (
-                      <SortableItem key={item.id} id={item.id}>
-                          {item.text}
-                      </SortableItem>
-                  ))}
-              </SortableContext>
-          </DndContext>
-      );
-  }
+    } else {
+      await handleSubmit();
+    }
+  };
 
-  if (q.type === "radio") {
+  const renderQuestion = (q) => {
+    if (q.type === "ranking") {
+      return (
+        <DndContext collisionDetection={closestCenter} onDragEnd={(event) => handleDragEnd(event, q.id)}>
+          <SortableContext items={formData[q.id] || q.options} strategy={verticalListSortingStrategy}>
+            {(formData[q.id] || q.options).map((item) => (
+              <SortableItem key={item.id} id={item.id}>{item.text}</SortableItem>
+            ))}
+          </SortableContext>
+        </DndContext>
+      );
+    }
+
+    if (q.type === "radio") {
       return q.options.map((opt) => (
-          <div key={opt}>
-              <input 
-                  type="radio" 
-                  name={q.id} 
-                  value={opt} 
-                  checked={formData[q.id] === opt} 
-                  onChange={() => handleChange(q.id, opt)} 
-              /> {opt}
-          </div>
+        <div key={opt}>
+          <input type="radio" name={q.id} value={opt} checked={formData[q.id] === opt} onChange={() => handleChange(q.id, opt)} /> {opt}
+        </div>
       ));
-  }
+    }
 
-  if (q.type === "slider") {
+    if (q.type === "slider") {
       return (
-          <div className="d-flex flex-column">
-              <input
-                  type="range"
-                  name={q.id}
-                  min={q.min}
-                  max={q.max}
-                  step={q.step || 1}
-                  value={formData[q.id] || q.min}
-                  onChange={(e) => handleChange(q.id, e.target.value)}
-                  className="form-range"
-              />
-              <div className="d-flex justify-content-between mt-2">
-                  <span>{q.labels?.[q.min] || q.min}</span>
-                  <span>{formData[q.id] || q.min}</span>
-                  <span>{q.labels?.[q.max] || q.max}</span>
-              </div>
+        <div className="d-flex flex-column">
+          <input type="range" min={q.min} max={q.max} step={q.step || 1} value={formData[q.id] || q.min} onChange={(e) => handleChange(q.id, e.target.value)} />
+          <div className="d-flex justify-content-between">
+            <span>{q.labels?.[q.min]}</span>
+            <span>{formData[q.id] || q.min}</span>
+            <span>{q.labels?.[q.max]}</span>
           </div>
+        </div>
       );
-  }
+    }
 
-  if (q.type === "likert") {
-      return (
-          <div className="d-flex flex-column">
-              <div className="d-flex justify-content-between mb-2">
-                  <span>{q.labels?.[q.scale[0]] || q.scale[0]}</span>
-                  <span>{q.labels?.[q.scale[q.scale.length - 1]] || q.scale[q.scale.length - 1]}</span>
-              </div>
-              <div className="d-flex justify-content-between">
-                  {q.scale.map((value) => (
-                      <label key={value} className="text-center">
-                          <input
-                              type="radio"
-                              name={q.id}
-                              value={value}
-                              checked={formData[q.id] === value}
-                              onChange={() => handleChange(q.id, value)}
-                              style={{ marginRight: "5px" }}
-                          />
-                          {value}
-                      </label>
-                  ))}
-              </div>
-          </div>
-      );
-  }
+    if (q.type === "multi-select") {
+      return q.options.map((opt) => (
+        <div key={opt}>
+          <input
+            type="checkbox"
+            checked={formData[q.id]?.includes(opt)}
+            onChange={(e) => {
+              const selected = formData[q.id] || [];
+              handleChange(q.id, e.target.checked ? [...selected, opt] : selected.filter(i => i !== opt), true);
+            }}
+          /> {opt}
+        </div>
+      ));
+    }
 
-  if (q.type === "matrix") {
-      return (
-          <table className="table">
-              <thead>
-                  <tr>
-                      <th></th>
-                      {q.columns.map((col) => (
-                          <th key={col}>{col}</th>
-                      ))}
-                  </tr>
-              </thead>
-              <tbody>
-                  {q.rows.map((row) => (
-                      <tr key={row}>
-                          <td>{row}</td>
-                          {q.columns.map((col) => (
-                              <td key={col}>
-                                  <input
-                                      type="radio"
-                                      name={`${q.id}-${row}`}
-                                      checked={formData[`${q.id}-${row}`] === col}
-                                      onChange={() => handleChange(`${q.id}-${row}`, col)}
-                                  />
-                              </td>
-                          ))}
-                      </tr>
-                  ))}
-              </tbody>
-          </table>
-      );
-  }
-
-  if (q.type === "multi-select") {
-      return (
-          <div className="row">
-              {q.options.map((opt) => (
-                  <div key={opt} className="col-md-4 d-flex align-items-center">
-                      <input
-                          type="checkbox"
-                          name={q.id}
-                          value={opt}
-                          checked={formData[q.id]?.includes(opt) || false}
-                          onChange={(e) => {
-                              const selected = formData[q.id] || [];
-                              if (e.target.checked && selected.length < q.limit) {
-                                  handleChange(q.id, [...selected, opt]);
-                              } else if (!e.target.checked) {
-                                  handleChange(q.id, selected.filter(item => item !== opt));
-                              }
-                          }}
-                      />
-                      <label className="ms-2">{opt}</label>
-                  </div>
-              ))}
-          </div>
-      );
-  }
+    return (
+      <textarea className="form-control" value={formData[q.id] || ""} onChange={(e) => handleChange(q.id, e.target.value)} />
+    );
+  };
 
   return (
-      <textarea
-          className="form-control"
-          value={formData[q.id] || ""}
-          onChange={(e) => handleChange(q.id, e.target.value)}
-      />
+    <div className="d-flex align-items-center justify-content-center vh-100 w-100" style={{
+      backgroundImage: "url('/LEP Background 5.jpg')",
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      backgroundRepeat: "no-repeat",
+      minHeight: "100vh",
+      width: "100vw"
+    }}>
+      <div className="card shadow-lg p-5" style={{ maxWidth: "600px", width: "100%", minHeight: "400px", maxHeight: "85vh", overflowY: "auto" }}>
+        <div className="text-center">
+          <img src="/circle logo test.jpg" alt="LEP Logo" style={{ width: "150px", marginBottom: "15px" }} />
+        </div>
+
+        <h4 className="fw-bold mb-3">{sections[currentSection].title}</h4>
+
+        {sections[currentSection].questions.map((q) => (
+          <div key={q.id} className="mb-4">
+            <label className="form-label fw-semibold">{q.prompt}</label>
+            {renderQuestion(q)}
+          </div>
+        ))}
+
+        <button onClick={handleNext} className="btn w-100 py-2 fw-bold rounded-pill shadow-sm" style={{ backgroundColor: "#212A37", color: "#FFFFFF" }}>
+          {currentSection < sections.length - 1 ? "Next Section" : "Submit"}
+        </button>
+      </div>
+    </div>
   );
 };
 
-
-return (
-  <div 
-    className="d-flex align-items-center justify-content-center vh-100 w-100" 
-    style={{ 
-      backgroundImage: "url('/LEP Background 5.jpg')", 
-      backgroundSize: "cover", 
-      backgroundPosition: "center", 
-      backgroundRepeat: "no-repeat",
-      minHeight: "100vh",
-      width: "100vw" 
-    }}
-  >
-    <div className="card shadow-lg p-5" style={{ maxWidth: "600px", width: "100%", minHeight: "400px", maxHeight: "85vh", overflowY: "auto" }}>
-      <div className="text-center">
-        <img src="/circle logo test.jpg" alt="LEP Logo" style={{ width: "150px", marginBottom: "15px" }} />
-      </div>
-
-      {/* Loop through all questions in the current section */}
-      {sections[currentSection].questions.map((q) => (
-        <div key={q.id} className="mb-4">
-          <label className="form-label fw-semibold">{q.prompt}</label>
-
-          {/* Use a dedicated renderQuestion function to handle types */}
-          {renderQuestion(q)}
-        </div>
-      ))}
-
-      <button 
-        onClick={handleNext} 
-        className="btn w-100 py-2 fw-bold rounded-pill shadow-sm" 
-        style={{ backgroundColor: "#212A37", color: "#FFFFFF", border: "none" }}
-      >
-        Next
-      </button>
-
-      {/* AI Analysis Display */}
-      {analysisResult && (
-        <div className="mt-4 p-3 bg-light border rounded">
-          <h4 className="fw-bold">AI Leadership Analysis</h4>
-          <p><strong>{analysisResult.split("\n")[0]}</strong></p>
-          <ul>
-            {analysisResult.split("\n").slice(1).map((point, index) => (
-              point.trim() && <li key={index}>{point}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-    </div>
-  </div>
-);
-};
-
-export default LEPIntakeForm; // ✅ Ensure the component is properly exported
+export default LEPIntakeForm;
