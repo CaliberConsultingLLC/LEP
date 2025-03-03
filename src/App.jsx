@@ -8,7 +8,7 @@ function App() {
       <Router>
           <Routes>
               <Route path="/" element={<LEPIntakeForm />} />
-              <Route path="/src" element={<ResultsPage />} />
+              <Route path="/results" element={<ResultsPage />} /> {/* Fixed path here */}
           </Routes>
       </Router>
   );

@@ -6,7 +6,7 @@ const ResultsPage = () => {
   const navigate = useNavigate();
   const analysis = location.state?.analysis;
 
-  if (!analysisResult) {
+  if (!analysis) {
     return (
       <div className="d-flex align-items-center justify-content-center vh-100 w-100">
         <div className="text-center">
@@ -18,7 +18,7 @@ const ResultsPage = () => {
   }
 
   // Split the AI result into lines
-  const analysisLines = analysisResult.split("\n").map(line => line.trim()).filter(line => line);
+  const analysisLines = analysis.split("\n").map(line => line.trim()).filter(line => line);
 
   // Helper to split the analysis into sections
   const getSectionContent = (startKeyword, endKeyword) => {
