@@ -17,20 +17,14 @@ const sections = [
         type: "slider",
         min: 3,
         max: 15,
-        step: 1, // optional, defaults to 1 if omitted
-        labels: { 1: "1", 12: "15+" }
-},
+        step: 1,
+        labels: { 1: "1", 15: "15+" }
+      },
       {
         id: "leadershipExperience",
         prompt: "How many years have you been in a leadership role?",
         type: "radio",
         options: ["Less than 1 year", "1-3 years", "3-5 years", "5+ years"],
-      },
-      {
-        id: "leadershipJourney",
-        prompt: "How would you describe yourself as a leader?",
-        type: "radio",
-        options: ["Emerging", "Learning", "Experienced", "Mastering"],
       },
       {
         id: "leadershipStyle",
@@ -44,27 +38,27 @@ const sections = [
         limit: 3,
       },
       {
-        id: "confidenceLevel",
-        prompt: "How confident are you in your decision-making abilities?",
-        type: "likert",
-        scale: [1, 2, 3, 4, 5],
-        labels: { 1: "Not Confident", 5: "Very Confident" },
-      },
-      {
-        id: "leadershipChallenge",
-        prompt: "What’s your biggest leadership challenge today?",
+        id: "leadershipSuperpower",
+        prompt: "What’s your leadership superpower — if it had to fit on a bumper sticker?",
         type: "radio",
         options: [
-          "Decision-making", "Influence", "Conflict Resolution",
-          "Time Management", "Delegation", "Emotional Intelligence",
-          "Strategic Thinking", "Coaching & Mentoring"
-        ],
+          "Big ideas, bold moves",
+          "Human GPS for my team",
+          "Making chaos look organized",
+          "The glue holding it all together"
+        ]
       },
       {
-        id: "leadershipDecision",
-        prompt: "Describe a time you had to make a difficult decision as a leader?",
-        type: "text",
-      },
+        id: "leadershipFuel",
+        prompt: "What secretly fuels you as a leader (be honest)?",
+        type: "radio",
+        options: [
+          "Seeing my people level up",
+          "Crushing ambitious goals",
+          "Solving problems no one else can touch",
+          "Building a team people would fight to join"
+        ]
+      }
     ],
   },
   {
@@ -75,24 +69,61 @@ const sections = [
         prompt: "Your team is falling behind on a project. What’s your first action?",
         type: "radio",
         options: [
-          "Set a strict deadline", "Offer additional support",
-          "Re-evaluate priorities", "Consult the team for solutions",
+          "Set a strict deadline",
+          "Offer additional support",
+          "Re-evaluate priorities",
+          "Consult the team for solutions"
         ],
       },
       {
-        id: "leadershipReflection",
+        id: "conflictResponse",
+        prompt: "When tension bubbles up in your team, what’s your gut-level first instinct?",
+        type: "radio",
+        options: [
+          "Throw it all on the table and hash it out immediately",
+          "Stay curious and watch how it unfolds",
+          "Quietly pull people aside and work it out off-stage",
+          "Hope it solves itself so I don’t have to"
+        ]
+      },
+      {
+        id: "mistakeReaction",
+        prompt: "When someone on your team screws up, what’s your unfiltered inner monologue?",
+        type: "radio",
+        options: [
+          "We’re gonna fix this together",
+          "They better learn from this",
+          "Ugh, I should’ve seen this coming",
+          "Is it worth making a thing out of this?"
+        ]
+      },
+      {
+        id: "leadershipWarningLabel",
         prompt: "If your leadership style had a ‘warning label,’ what would it say?",
+        type: "radio",
+        options: [
+          "May cause unintended chaos during high-speed innovation",
+          "Handle with care — feedback hits harder than intended",
+          "Warning: Over-involvement risk under pressure",
+          "Contains 100% unfiltered honesty, no preservatives"
+        ]
+      },
+      {
+        id: "leadershipDecision",
+        prompt: "Describe a time you had to make a difficult decision as a leader.",
         type: "text",
       },
       {
-        id: "highPerformer",
-        prompt: "A high performer has disengaged recently. What do you do?",
+        id: "stressfulTask",
+        prompt: "Which leadership task quietly (or loudly) stresses you out the most?",
         type: "radio",
         options: [
-          "Pull them aside to talk", "Give them a new challenge",
-          "Analyze their recent performance", "Observe for a bit before acting",
-        ],
-      },
+          "Giving tough feedback",
+          "Asking for help when I need it",
+          "Navigating team drama",
+          "Delegating something I secretly want to control"
+        ]
+      }
     ],
   },
   {
@@ -110,27 +141,38 @@ const sections = [
           { id: "encouragement", text: "Encouragement" }
         ],
       },
-
-    ],
-  },
-  {
-    title: "Leadership Growth & Reflection",
-    questions: [
+      {
+        id: "invisibleEfforts",
+        prompt: "What’s something you do for your team that no one notices, but you know it makes a difference?",
+        type: "text",
+      },
+      {
+        id: "teamDescription",
+        prompt: "If your team had to describe your communication style in 3 words, what would you *hope* they say?",
+        type: "text",
+      },
+      {
+        id: "feedbackReaction",
+        prompt: "When your team gives you feedback (the real kind, not just ‘all good’), how do you typically react?",
+        type: "radio",
+        options: [
+          "Grateful – keep it coming",
+          "Slightly defensive, but I’ll process it",
+          "Uncomfortable, but I know it’s important",
+          "It rarely happens, so it hits hard"
+        ]
+      },
       {
         id: "admiredTrait",
         prompt: "What leadership trait do you most admire in others?",
         type: "radio",
-        options: ["Confidence", "Empathy", "Resilience", "Vision", "Decisiveness"],
-      },
-      
-      {
-        id: "confidenceMatrix",
-        prompt: "Rate your skill in each of these leadership areas:",
-        type: "matrix",
-        rows: ["Decision-making", "Conflict Resolution", "Delegation"],
-        columns: ["Poor", "Average", "Good", "Excellent"]
-      },
-
+        options: ["Confidence", "Empathy", "Resilience", "Vision", "Decisiveness"]
+      }
+    ],
+  },
+  {
+    title: "Feedback Preferences (AI Persona Customization)",
+    questions: [
       {
         id: "feedbackFormality",
         prompt: "How formal do you want your feedback to be?",
@@ -140,7 +182,6 @@ const sections = [
         step: 1,
         labels: { 1: "Very Informal", 10: "Very Formal" }
       },
-
       {
         id: "feedbackTone",
         prompt: "How empathetic do you want your feedback to be?",
@@ -152,7 +193,7 @@ const sections = [
       }
     ],
   },
-];
+]; 
 
 const LEPIntakeForm = () => {
   const [formData, setFormData] = useState({});
