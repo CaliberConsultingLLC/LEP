@@ -33,8 +33,8 @@ const ResultsPage = () => {
     return analysisLines.slice(startIndex + 1, endIndex === -1 ? analysisLines.length : endIndex);
   };
 
-  const summary = extractSection("Leadership Summary", "Leadership Strengths");
-  const strengths = extractSection("Leadership Strengths", "Potential Blind Spots");
+  const summary = extractSection("Leadership Summary", "Your Leadership Strengths");
+  const strengths = extractSection("Your Leadership Strengths", "Potential Blind Spots");
   const blindSpots = extractSection("Potential Blind Spots", "High-Impact Development Tip");
   const developmentTip = extractSection("High-Impact Development Tip");
 
@@ -45,10 +45,13 @@ const ResultsPage = () => {
         <div className="text-center">
           {content.map((line, index) => {
             const [trait, ...descriptionParts] = line.split(":");
+
             return (
               <div key={index} className="mb-3">
-                <div style={{ fontWeight: "bold", fontStyle: "italic", fontSize: "1.1rem" }}>{trait.trim()}</div>
-                <ul className="text-start mx-auto" style={{ maxWidth: "500px" }}>
+                <div style={{ fontWeight: "bold", fontStyle: "italic", fontSize: "1.2rem", textAlign: "center", margin: "10px 0" }}>
+                  {trait.trim()}
+                </div>
+                <ul className="text-start mx-auto" style={{ maxWidth: "500px", paddingLeft: "20px" }}>
                   {descriptionParts.join(":").split("-").filter(Boolean).map((desc, idx) => (
                     <li key={idx}>{desc.trim()}</li>
                   ))}
@@ -68,7 +71,7 @@ const ResultsPage = () => {
   );
 
   return (
-    <div 
+    <div
       className="d-flex align-items-center justify-content-center vh-100 w-100"
       style={{
         backgroundImage: "url('/LEP Background 5.jpg')",
