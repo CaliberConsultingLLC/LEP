@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, doc, setDoc } from "firebase/firestore";
 
-// Firebase config - make sure these match your Firebase project
+// Firebase config - ensure these match your Firebase project settings
 const firebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY,
   authDomain: process.env.FIREBASE_AUTH_DOMAIN,
@@ -26,12 +26,14 @@ export default async function handler(req, res) {
   }
 
   try {
-    const userCampaignRef = doc(db, "campaigns", userEmail);
+    // Use userEmail + timestamp to ensure unique campaigns for the same user
+    const timestamp = new Date().toISOString();
+    const userCampaignRef = doc(db, "campaigns", `${userEmail}-${timestamp}`);
 
     await setDoc(userCampaignRef, {
       email: userEmail,
-      campaign: campaignData,  // <-- Stores the trait -> statements mapping
-      createdAt: new Date().toISOString()
+      campaign: campaignData,  // This should be an object like { Supportive: ["stmt1", "stmt2", "stmt3"], ... }
+      createdAt: timestamp,
     });
 
     res.status(200).json({ message: "Campaign saved successfully." });

@@ -49,15 +49,15 @@ const ResultsPage = () => {
       </div>
     ) : null
   );
-  
+
   const handleBuildCampaign = async () => {
     try {
       const response = await fetch("/api/generate-campaign", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          analysis, // Send the analysis text to the API
-          userEmail // Optional - remove if you don't have this yet
+          analysis // Send the analysis text to the API
+          
         })
       });
   
@@ -68,7 +68,7 @@ const ResultsPage = () => {
       const { campaign } = await response.json();
   
       navigate("/campaign-builder", {
-        state: { campaign, userEmail } // Pass data to CampaignBuilder
+        state: { campaign }  // ✅ Only pass the campaign (the AI-generated content)
       });
   
     } catch (error) {

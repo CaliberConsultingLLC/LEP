@@ -4,8 +4,11 @@ import { useLocation, useNavigate } from "react-router-dom";
 const CampaignBuilder = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { campaign, userEmail } = location.state || {}; // <-- Updated
+  const { campaign } = location.state || {}; // ✅ Only campaign comes from ResultsPage
 
+const [userEmail, setUserEmail] = useState("");  // ✅ Collect email directly here
+
+  
   const [campaignData, setCampaignData] = useState(() => {
     const initialData = {};
     if (campaign) {
@@ -77,7 +80,16 @@ const CampaignBuilder = () => {
             ))}
           </div>
         ))}
-
+<div className="mb-3">
+  <label className="form-label fw-bold">Your Email (for saving your campaign):</label>
+  <input
+    type="email"
+    className="form-control"
+    value={userEmail}
+    onChange={(e) => setUserEmail(e.target.value)}
+    required
+  />
+</div>
         <div className="text-center">
           <button className="btn btn-primary" onClick={handleSaveCampaign}>Save My Campaign</button>
         </div>
