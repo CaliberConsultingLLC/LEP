@@ -2,10 +2,10 @@ import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const ResultsPage = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const analysis = location.state?.analysis;
-  const userEmail = location.state?.userEmail; // ✅ Capture email from state
+    const location = useLocation();
+    const navigate = useNavigate();
+    const { analysis, formData } = location.state || {}; // ✅ Only these two now
+  
 
   if (!analysis) {
     return (
@@ -80,7 +80,7 @@ const ResultsPage = () => {
         <div className="text-center mt-4">
         <button 
     className="btn btn-success" 
-    onClick={() => navigate("/campaign-builder")}
+    onClick={() => navigate("/campaign-builder", { state: { formData } })} 
 >
     Build My Continuous Improvement Campaign
 </button>

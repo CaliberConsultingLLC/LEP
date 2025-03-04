@@ -4,11 +4,17 @@ import { db } from "./firebase";
 import { collection, addDoc } from "firebase/firestore";
 
 const CampaignBuilder = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { selectedTraits, userEmail } = location.state || {};
-
-  const [campaignData, setCampaignData] = useState({});
+    const location = useLocation();
+    const navigate = useNavigate();
+  
+    // Receive formData (not selectedTraits or userEmail from ResultsPage anymore)
+    const { formData } = location.state || {};
+  
+    // State to hold user email (since we collect it here, not in intake)
+    const [userEmail, setUserEmail] = useState("");
+  
+    // Initialize campaignData (this will be built out dynamically from formData traits)
+    const [campaignData, setCampaignData] = useState({});
 
   // Default statement generator using AI-like placeholders (replace with API call if desired)
   const generateDefaultStatements = (trait) => [

@@ -238,10 +238,11 @@ const LEPIntakeForm = () => {
 
       navigate("/results", { 
         state: { 
-          analysis: result.analysis,
-          userEmail: formData.userEmail // ✅ Pass email to results page
-        }
-      });
+            analysis: result.analysis,
+            formData // ✅ Pass formData so it's available for campaign builder later
+        } 
+    });
+  
 
     } catch (error) {
       console.error("❌ Error submitting form:", error);
