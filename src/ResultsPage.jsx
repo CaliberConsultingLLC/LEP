@@ -20,75 +20,29 @@ const ResultsPage = () => {
   const analysisLines = analysis.split("\n").map(line => line.trim()).filter(line => line);
 
   const extractSection = (startKeyword, endKeyword = null) => {
-    const startIndex = analysisLines.findIndex(line => 
+    const startIndex = analysisLines.findIndex(line =>
       line.toLowerCase().includes(startKeyword.toLowerCase())
     );
+
     if (startIndex === -1) return [];
 
-    const endIndex = endKeyword 
-      ? analysisLines.findIndex((line, idx) => idx > startIndex && line.toLowerCase().includes(endKeyword.toLowerCase())) 
+    const endIndex = endKeyword
+      ? analysisLines.findIndex((line, idx) => idx > startIndex && line.toLowerCase().includes(endKeyword.toLowerCase()))
       : analysisLines.length;
 
     return analysisLines.slice(startIndex + 1, endIndex === -1 ? analysisLines.length : endIndex);
   };
 
-  const summary = extractSection("Leadership Summary", "Leadership Traits");
-  const strengths = extractSection("Leadership Traits", "Potential Blind Spots");
-  const blindSpots = extractSection("Potential Blind Spots", "High-Impact Development Tip");
-  const developmentTip = extractSection("High-Impact Development Tip");
+  // Extract sections directly as blocks of text
+  const summary = extractSection("Leadership Summary", "Leadership Traits").join(" ");
+  const strengths = extractSection("Leadership Traits", "Potential Blind Spots").join(" ");
+  const blindSpots = extractSection("Potential Blind Spots", "High-Impact Development Tip").join(" ");
+  const developmentTip = extractSection("High-Impact Development Tip").join(" ");
 
-  const parseTraitsAndDescriptions = (section) => {
-    const traits = [];
-    let currentTrait = null;
-    section.forEach(line => {
-      if (line.startsWith("-")) {
-        if (currentTrait) traits.push(currentTrait);
-        currentTrait = { trait: line.replace(/[-*]/g, "").trim(), descriptions: [] };
-      } else if (currentTrait && line.trim()) {
-        currentTrait.descriptions.push(line);
-      }
-    });
-    if (currentTrait) traits.push(currentTrait);
-    return traits;
-  };
-
-  const strengthTraits = parseTraitsAndDescriptions(strengths);
-  const blindSpotTraits = parseTraitsAndDescriptions(blindSpots);
-
-  const renderSectionHeader = (title) => (
-    <h4 className="fw-bold text-center text-decoration-underline mt-4">{title}</h4>
-  );
-
-  const renderSummary = (summaryContent) => (
-    <div className="mb-4 text-center">
-      {summaryContent.map((line, index) => (
-        <p key={index} className="mb-2">{line}</p>
-      ))}
-    </div>
-  );
-
-  const renderTraitsSection = (title, traits) => (
+  const renderSection = (title, content) => (
     <div className="mb-4">
-      {renderSectionHeader(title)}
-      {traits.map((trait, index) => (
-        <div key={index} className="mb-4">
-          <h5 className="fw-bold text-center">{trait.trait}</h5>
-          <ul className="list-unstyled">
-            {trait.descriptions.map((desc, idx) => (
-              <li key={idx} className="mb-1">{desc}</li>
-            ))}
-          </ul>
-        </div>
-      ))}
-    </div>
-  );
-
-  const renderDevelopmentTip = (developmentContent) => (
-    <div className="mb-4 text-center">
-      {renderSectionHeader("High-Impact Development Tip")}
-      {developmentContent.map((line, index) => (
-        <p key={index} className="mb-2">{line}</p>
-      ))}
+      <h4 className="fw-bold text-decoration-underline text-center">{title}</h4>
+      <p className="text-center">{content}</p>
     </div>
   );
 
@@ -110,13 +64,10 @@ const ResultsPage = () => {
           <h2 className="mb-4">Your Leadership Analysis</h2>
         </div>
 
-        {renderSectionHeader("Leadership Summary")}
-        {renderSummary(summary)}
-
-        {renderTraitsSection("Your Leadership Strengths", strengthTraits)}
-        {renderTraitsSection("Potential Blind Spots", blindSpotTraits)}
-
-        {renderDevelopmentTip(developmentTip)}
+        {renderSection("Leadership Summary", summary)}
+        {renderSection("Your Leadership Strengths", strengths)}
+        {renderSection("Potential Blind Spots", blindSpots)}
+        {renderSection("High-Impact Development Tip", developmentTip)}
 
         <div className="text-center">
           <button className="btn btn-primary" onClick={() => navigate("/")}>Start Over</button>
