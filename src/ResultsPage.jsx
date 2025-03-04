@@ -17,39 +17,53 @@ const ResultsPage = () => {
     );
   }
 
-  // Split analysis into lines and remove empty lines
   const analysisLines = analysis.split("\n").map(line => line.trim()).filter(line => line);
 
-  // Extracts content between section headers
   const extractSection = (startKeyword, endKeyword = null) => {
-    const startIndex = analysisLines.findIndex(line => 
+    const startIndex = analysisLines.findIndex(line =>
       line.toLowerCase().includes(startKeyword.toLowerCase())
     );
 
     if (startIndex === -1) return [];
 
-    const endIndex = endKeyword 
-      ? analysisLines.findIndex((line, idx) => idx > startIndex && line.toLowerCase().includes(endKeyword.toLowerCase())) 
+    const endIndex = endKeyword
+      ? analysisLines.findIndex((line, idx) => idx > startIndex && line.toLowerCase().includes(endKeyword.toLowerCase()))
       : analysisLines.length;
 
     return analysisLines.slice(startIndex + 1, endIndex === -1 ? analysisLines.length : endIndex);
   };
 
-  // Section Data Extraction
-  const summary = extractSection("Leadership Summary", "Leadership Traits");
-  const strengths = extractSection("Leadership Traits", "Potential Blind Spots");
+  const summary = extractSection("Leadership Summary", "Leadership Strengths");
+  const strengths = extractSection("Leadership Strengths", "Potential Blind Spots");
   const blindSpots = extractSection("Potential Blind Spots", "High-Impact Development Tip");
   const developmentTip = extractSection("High-Impact Development Tip");
 
-  // Safely render sections
-  const renderSection = (sectionTitle, content) => (
+  const renderCenteredSection = (title, content, isTraits = false) => (
     <div className="mb-4">
-      <h4 className="fw-bold">{sectionTitle}</h4>
-      <ul>
-        {content.map((line, index) => (
-          <li key={index}>{line.replace(/^[-•]\s*/, "")}</li>
-        ))}
-      </ul>
+      <h4 className="fw-bold text-center" style={{ textDecoration: "underline", fontSize: "1.2rem" }}>{title}</h4>
+      {isTraits ? (
+        <div className="text-center">
+          {content.map((line, index) => {
+            const [trait, ...descriptionParts] = line.split(":");
+            return (
+              <div key={index} className="mb-3">
+                <div style={{ fontWeight: "bold", fontStyle: "italic", fontSize: "1.1rem" }}>{trait.trim()}</div>
+                <ul className="text-start mx-auto" style={{ maxWidth: "500px" }}>
+                  {descriptionParts.join(":").split("-").filter(Boolean).map((desc, idx) => (
+                    <li key={idx}>{desc.trim()}</li>
+                  ))}
+                </ul>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="text-center" style={{ fontSize: "1rem" }}>
+          {content.map((line, index) => (
+            <p key={index}>{line.replace(/^[-•]\s*/, "")}</p>
+          ))}
+        </div>
+      )}
     </div>
   );
 
@@ -71,10 +85,10 @@ const ResultsPage = () => {
           <h2 className="mb-4">Your Leadership Analysis</h2>
         </div>
 
-        {renderSection("Leadership Summary", summary)}
-        {renderSection("Your Leadership Strengths", strengths)}
-        {renderSection("Potential Blind Spots", blindSpots)}
-        {renderSection("High-Impact Development Tip", developmentTip)}
+        {renderCenteredSection("Leadership Summary", summary)}
+        {renderCenteredSection("Your Leadership Strengths", strengths, true)}
+        {renderCenteredSection("Potential Blind Spots", blindSpots, true)}
+        {renderCenteredSection("High-Impact Development Tip", developmentTip)}
 
         <div className="text-center">
           <button className="btn btn-primary" onClick={() => navigate("/")}>Start Over</button>
