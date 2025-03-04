@@ -190,10 +190,10 @@ const sections = [
   },
 ];
 
+
 const LEPIntakeForm = () => {
   const [formData, setFormData] = useState({});
   const [currentSection, setCurrentSection] = useState(0);
-
   const navigate = useNavigate();
 
   const handleChange = (id, value, isMultiSelect = false) => {
@@ -217,38 +217,30 @@ const LEPIntakeForm = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
-    if (e) e.preventDefault();
+  const handleSubmit = async () => {
     console.log("🚀 Form submission started...");
     console.log("📤 Form Data:", formData);
 
     try {
-        const response = await fetch("/api/analyze-leadership", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(formData),
-        });
+      const response = await fetch("/api/analyze-leadership", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
-        if (!response.ok) {
-            throw new Error(`Server responded with ${response.status}`);
-        }
+      if (!response.ok) {
+        throw new Error(`Server responded with ${response.status}`);
+      }
 
-        const result = await response.json();
-        console.log("✅ AI Analysis Result:", result);
+      const result = await response.json();
+      console.log("✅ AI Analysis Result:", result);
 
-        // Save to sessionStorage for refresh-proofing
-        sessionStorage.setItem("analysis", result.analysis);
-
-        // ✅ THIS is where navigate() should be
-        navigate("/results", { state: { analysis: result.analysis } });
-
+      navigate("/results", { state: { analysis: result.analysis } });
     } catch (error) {
-        console.error("❌ Error submitting form:", error);
-        alert("There was an issue submitting the form.");
+      console.error("❌ Error submitting form:", error);
+      alert("There was an issue submitting the form.");
     }
-};
+  };
 
   const handleNext = async () => {
     if (currentSection < sections.length - 1) {
@@ -312,6 +304,38 @@ const LEPIntakeForm = () => {
     );
   };
 
+  // Dev-only function to auto-fill and submit form (skips intake for dev work)
+  const fillWithTestData = async () => {
+    const testData = {
+      teamSize: 10,
+      leadershipExperience: "3-5 years",
+      leadershipStyle: ["Supportive", "Strategic", "Adaptive"],
+      leadershipSuperpower: "Big ideas, bold moves",
+      leadershipFuel: "Seeing my people level up",
+      projectAction: "Re-evaluate priorities",
+      conflictResponse: "Stay curious and watch how it unfolds",
+      mistakeReaction: "We’re gonna fix this together",
+      leadershipWarningLabel: "Handle with care — feedback hits harder than intended",
+      stressfulTask: "Navigating team drama",
+      teamNeeds: [
+        { id: "clarity", text: "Clarity" },
+        { id: "support", text: "Support" },
+        { id: "direction", text: "Direction" },
+        { id: "flexibility", text: "Flexibility" },
+        { id: "encouragement", text: "Encouragement" }
+      ],
+      invisibleEfforts: "I shield the team from executive chaos",
+      teamDescription: "Clear, supportive, strategic",
+      feedbackReaction: "Slightly defensive, but I’ll process it",
+      admiredTrait: "Empathy",
+      feedbackFormality: 5,
+      feedbackTone: 5
+    };
+
+    setFormData(testData);
+    await handleSubmit();  // Submit immediately
+  };
+
   return (
     <div className="d-flex align-items-center justify-content-center vh-100 w-100" style={{
       backgroundImage: "url('/LEP Background 5.jpg')",
@@ -321,7 +345,7 @@ const LEPIntakeForm = () => {
       minHeight: "100vh",
       width: "100vw"
     }}>
-      <div className="card shadow-lg p-5" style={{ maxWidth: "600px", width: "100%", minHeight: "400px", maxHeight: "85vh", overflowY: "auto" }}>
+      <div className="card shadow-lg p-5" style={{ maxWidth: "600px", width: "100%", maxHeight: "85vh", overflowY: "auto" }}>
         <div className="text-center">
           <img src="/circle logo test.jpg" alt="LEP Logo" style={{ width: "150px", marginBottom: "15px" }} />
         </div>
@@ -338,6 +362,13 @@ const LEPIntakeForm = () => {
         <button onClick={handleNext} className="btn w-100 py-2 fw-bold rounded-pill shadow-sm" style={{ backgroundColor: "#212A37", color: "#FFFFFF" }}>
           {currentSection < sections.length - 1 ? "Next Section" : "Submit"}
         </button>
+
+        {/* Dev Skip Button (only visible in dev mode) */}
+        {process.env.NODE_ENV === "development" && (
+          <button className="btn btn-warning mt-3" onClick={fillWithTestData}>
+            Skip to Results (Dev)
+          </button>
+        )}
       </div>
     </div>
   );

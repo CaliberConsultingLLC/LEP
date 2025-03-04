@@ -75,6 +75,11 @@ const ResultsPage = () => {
         <div className="text-center">
           <button className="btn btn-primary" onClick={() => navigate("/")}>Start Over</button>
         </div>
+        <div className="text-center mt-4">
+  <button className="btn btn-success" onClick={() => navigate("/campaign-builder")}>
+    Build My Continuous Improvement Campaign
+  </button>
+</div>
       </div>
     </div>
   );
