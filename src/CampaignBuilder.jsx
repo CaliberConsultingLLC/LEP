@@ -84,7 +84,17 @@ const CampaignBuilder = () => {
             </div>
           </div>
         ))}
-
+{/* Email Input */}
+<div className="mb-3">
+          <label className="form-label fw-bold">Your Email (for saving your campaign):</label>
+          <input
+            type="email"
+            className="form-control"
+            value={formData.userEmail || ""}
+            onChange={(e) => handleChange("userEmail", e.target.value)}
+            required
+          />
+        </div>
         <button className="btn btn-primary w-100 mt-3" onClick={handleSubmit}>Save My Campaign</button>
       </div>
     </div>

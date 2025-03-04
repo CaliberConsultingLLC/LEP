@@ -357,17 +357,7 @@ const LEPIntakeForm = () => {
           <img src="/circle logo test.jpg" alt="LEP Logo" style={{ width: "150px", marginBottom: "15px" }} />
         </div>
 
-        {/* Email Input */}
-        <div className="mb-3">
-          <label className="form-label fw-bold">Your Email (for saving your campaign):</label>
-          <input
-            type="email"
-            className="form-control"
-            value={formData.userEmail || ""}
-            onChange={(e) => handleChange("userEmail", e.target.value)}
-            required
-          />
-        </div>
+        
 
         <h4 className="fw-bold mb-3">{sections[currentSection].title}</h4>
 

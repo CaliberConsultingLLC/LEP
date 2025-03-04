@@ -1,103 +1,93 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-const CampaignBuilder = () => {
+const ResultsPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const analysis = location.state?.analysis;
+  const userEmail = location.state?.userEmail; // ✅ Capture email from state
 
-  const userEmail = location.state?.userEmail || "";
-  
-  // This should be populated either from AI response or defaults
-  const [campaign, setCampaign] = useState([
-    { trait: "Supportive", statements: ["Placeholder statement 1", "Placeholder statement 2", "Placeholder statement 3"] },
-    { trait: "Strategic", statements: ["Placeholder statement 1", "Placeholder statement 2", "Placeholder statement 3"] }
-  ]);
+  if (!analysis) {
+    return (
+      <div className="d-flex align-items-center justify-content-center vh-100 w-100">
+        <div className="text-center">
+          <h2>No results found</h2>
+          <button className="btn btn-primary" onClick={() => navigate("/")}>Back to Intake</button>
+        </div>
+      </div>
+    );
+  }
 
-  // Simulate AI generation (can be replaced with a real API call later)
-  useEffect(() => {
-    const fetchInitialCampaign = async () => {
-      // Placeholder logic - in reality, you'd call an endpoint or get it from analysis
-      const aiGeneratedCampaign = [
-        { trait: "Supportive", statements: ["I ensure my team feels heard.", "I offer guidance when challenges arise.", "I celebrate team wins consistently."] },
-        { trait: "Strategic", statements: ["I align team goals with big-picture vision.", "I prioritize projects based on strategic impact.", "I communicate how daily work fits into larger goals."] }
-      ];
-      setCampaign(aiGeneratedCampaign);
-    };
+  // Clean and split the analysis into usable lines
+  const analysisLines = analysis.split("\n").map(line => line.trim()).filter(line => line);
 
-    fetchInitialCampaign();
-  }, []);
+  // Helper function to extract clean text block between headers
+  const extractSection = (startKeyword, endKeyword = null) => {
+    const startIndex = analysisLines.findIndex(line =>
+      line.toLowerCase().includes(startKeyword.toLowerCase())
+    );
 
-  const handleStatementChange = (traitIndex, statementIndex, newValue) => {
-    const updatedCampaign = [...campaign];
-    updatedCampaign[traitIndex].statements[statementIndex] = newValue;
-    setCampaign(updatedCampaign);
+    if (startIndex === -1) return "";
+
+    const endIndex = endKeyword
+      ? analysisLines.findIndex((line, idx) => idx > startIndex && line.toLowerCase().includes(endKeyword.toLowerCase()))
+      : analysisLines.length;
+
+    return analysisLines.slice(startIndex + 1, endIndex === -1 ? analysisLines.length : endIndex).join(" ");
   };
 
-  const handleSaveCampaign = async () => {
-    const payload = {
-      userEmail,
-      campaign
-    };
+  const summary = extractSection("Leadership Summary", "Your Leadership Strengths");
+  const strengths = extractSection("Your Leadership Strengths", "Potential Blind Spots");
+  const blindSpots = extractSection("Potential Blind Spots", "High-Impact Development Tip");
+  const developmentTip = extractSection("High-Impact Development Tip");
 
-    console.log("Saving Campaign:", payload);
-
-    try {
-      const response = await fetch("/api/save-campaign", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to save campaign. Status: ${response.status}`);
-      }
-
-      alert("Campaign saved successfully!");
-      navigate("/");
-    } catch (error) {
-      console.error("Error saving campaign:", error);
-      alert("Failed to save campaign. Please try again.");
-    }
-  };
+  const renderSection = (title, content) => (
+    content ? (
+      <div className="mb-4">
+        <h4 className="fw-bold text-decoration-underline text-center">{title}</h4>
+        <p className="text-center">{content}</p>
+      </div>
+    ) : null
+  );
 
   return (
-    <div className="d-flex align-items-center justify-content-center vh-100 w-100" style={{
-      backgroundImage: "url('/LEP Background 5.jpg')",
-      backgroundSize: "cover",
-      backgroundPosition: "center",
-      backgroundRepeat: "no-repeat",
-      minHeight: "100vh",
-      width: "100vw"
-    }}>
+    <div
+      className="d-flex align-items-center justify-content-center vh-100 w-100"
+      style={{
+        backgroundImage: "url('/LEP Background 5.jpg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        minHeight: "100vh",
+        width: "100vw"
+      }}
+    >
       <div className="card shadow-lg p-5" style={{ maxWidth: "700px", width: "100%", overflowY: "auto", maxHeight: "90vh" }}>
         <div className="text-center">
           <img src="/circle logo test.jpg" alt="LEP Logo" style={{ width: "150px", marginBottom: "15px" }} />
-          <h2 className="mb-3">Continuous Improvement Campaign</h2>
-          <p>Refine your personalized leadership focus statements below.</p>
+          <h2 className="mb-4">Your Leadership Analysis</h2>
         </div>
 
-        {campaign.map((traitData, traitIndex) => (
-          <div key={traitData.trait} className="mb-4">
-            <h4 className="fw-bold text-center">{traitData.trait}</h4>
-            {traitData.statements.map((statement, statementIndex) => (
-              <div key={statementIndex} className="mb-2">
-                <input
-                  type="text"
-                  className="form-control"
-                  value={statement}
-                  onChange={(e) => handleStatementChange(traitIndex, statementIndex, e.target.value)}
-                />
-              </div>
-            ))}
-          </div>
-        ))}
+        {renderSection("Leadership Summary", summary)}
+        {renderSection("Your Leadership Strengths", strengths)}
+        {renderSection("Potential Blind Spots", blindSpots)}
+        {renderSection("High-Impact Development Tip", developmentTip)}
+
+        <div className="text-center">
+          <button className="btn btn-primary" onClick={() => navigate("/")}>Start Over</button>
+        </div>
 
         <div className="text-center mt-4">
-          <button className="btn btn-primary" onClick={handleSaveCampaign}>Save My Campaign</button>
+          <button 
+            className="btn btn-success" 
+            onClick={() => navigate("/campaign-builder", { state: { userEmail } })} // ✅ Pass email to Campaign Builder
+          >
+            Build My Continuous Improvement Campaign
+          </button>
         </div>
       </div>
     </div>
   );
 };
 
-export default CampaignBuilder;
+export default ResultsPage;
