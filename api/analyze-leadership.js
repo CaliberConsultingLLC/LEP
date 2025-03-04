@@ -43,23 +43,23 @@ Leadership Summary
 A 1-2 sentence "elevator pitch" summarizing the leader's style, personality, and approach to leadership. This should be insightful, not a list of their answers.
 
 Your Leadership Strengths
-- Trait 1: [Trait Name]
-  - Bullet 1: Brief example or description of how this strength might show up in practice
-  - Bullet 2: Another example (optional)
-- Trait 2: [Trait Name]
-  - Bullet 1: Brief example or description of how this strength might show up in practice
-  - Bullet 2: Another example (optional)
+[Trait Name]
+  Brief example or description of how this strength might show up in practice
+  Another example (optional)
+[Trait Name]
+  Brief example or description of how this strength might show up in practice
+  Another example (optional)
 
 Potential Blind Spots
-- Blind Spot 1: [Blind Spot Name]
-  - Bullet 1: Brief description of how this might show up in practice
-  - Bullet 2: Another example (optional)
-- Blind Spot 2: [Blind Spot Name]
-  - Bullet 1: Brief description of how this might show up in practice
-  - Bullet 2: Another example (optional)
-- Blind Spot 3: [Blind Spot Name]
-  - Bullet 1: Brief description of how this might show up in practice
-  - Bullet 2: Another example (optional)
+[Blind Spot Name]
+  Brief description of how this might show up in practice
+  Another example (optional)
+[Blind Spot Name]
+  Brief description of how this might show up in practice
+  Another example (optional)
+[Blind Spot Name]
+  Brief description of how this might show up in practice
+  Another example (optional)
 
 High-Impact Development Tip
 A concise, motivational "charge" or recommended focus area with practical, actionable steps they can take to level up their leadership.
