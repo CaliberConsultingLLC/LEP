@@ -195,6 +195,7 @@ const LEPIntakeForm = () => {
   const [formData, setFormData] = useState({});
   const [currentSection, setCurrentSection] = useState(0);
   const navigate = useNavigate();
+  const devMode = true; // Set to false when deploying to production
 
   const handleChange = (id, value, isMultiSelect = false) => {
     setFormData((prev) => ({
@@ -363,11 +364,12 @@ const LEPIntakeForm = () => {
           {currentSection < sections.length - 1 ? "Next Section" : "Submit"}
         </button>
 
-        {/* Dev Skip Button (only visible in dev mode) */}
-        {process.env.NODE_ENV === "development" && (
-          <button className="btn btn-warning mt-3" onClick={fillWithTestData}>
-            Skip to Results (Dev)
-          </button>
+        {devMode && (
+    <button 
+        className="btn btn-warning mt-3" 
+        onClick={fillWithTestData}>
+        Skip to Results (Dev)
+    </button>
         )}
       </div>
     </div>
