@@ -9,7 +9,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 
-  const { analysis, userEmail } = req.body;
+  const { analysis } = req.body; 
 
   if (!analysis) {
     return res.status(400).json({ error: "Missing analysis data" });
