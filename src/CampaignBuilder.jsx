@@ -1,107 +1,78 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { db } from "./firebase"; 
-import { collection, addDoc } from "firebase/firestore";
 
 const CampaignBuilder = () => {
-    const location = useLocation();
-    const navigate = useNavigate();
-  
-    // Receive formData (not selectedTraits or userEmail from ResultsPage anymore)
-    const { formData } = location.state || {};
-  
-    // State to hold user email (since we collect it here, not in intake)
-    const [userEmail, setUserEmail] = useState("");
-  
-    // Initialize campaignData (this will be built out dynamically from formData traits)
-    const [campaignData, setCampaignData] = useState({});
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  // Default statement generator using AI-like placeholders (replace with API call if desired)
-  const generateDefaultStatements = (trait) => [
-    `Focus on applying ${trait} in high-stakes situations.`,
-    `Ask your team how they experience your ${trait}.`,
-    `Set one personal goal to deepen your ${trait} this month.`
-  ];
+  // Capture formData passed from ResultsPage (contains all user intake responses)
+  const { formData } = location.state || {};
 
-  // Initialize editable statements when page loads
+  const [userEmail, setUserEmail] = useState(""); // Email will be collected here
+  const [campaignData, setCampaignData] = useState({}); // Trait/statement data
+
   useEffect(() => {
-    if (selectedTraits) {
-      const initialCampaign = {};
-      selectedTraits.forEach((trait) => {
-        initialCampaign[trait] = generateDefaultStatements(trait);
-      });
-      setCampaignData(initialCampaign);
-    }
-  }, [selectedTraits]);
-
-  // Handle updating individual statements
-  const handleStatementChange = (trait, index, newText) => {
-    setCampaignData((prev) => ({
-      ...prev,
-      [trait]: prev[trait].map((stmt, i) => (i === index ? newText : stmt))
-    }));
-  };
-
-  // Submit campaign to Firestore
-  const handleSubmit = async () => {
-    if (!userEmail) {
-      alert("User email is missing. Cannot save.");
+    if (!formData) {
+      console.error("❌ Missing formData. Redirecting to intake.");
+      navigate("/");  // If somehow accessed directly, redirect to intake.
       return;
     }
 
-    try {
-      await addDoc(collection(db, "campaigns"), {
-        userEmail,
-        campaignData,
-        timestamp: new Date(),
-      });
-      alert("Campaign saved successfully!");
-      navigate("/");
-    } catch (error) {
-      console.error("Error saving campaign:", error);
-      alert("Failed to save the campaign.");
-    }
-  };
+    // Example logic to generate the initial campaign traits
+    const initialCampaign = {
+      "Supportive": ["Be available for team check-ins", "Encourage open dialogue", "Provide regular positive feedback"],
+      "Strategic": ["Align team efforts to big-picture goals", "Anticipate future challenges", "Focus on high-impact opportunities"],
+      "Adaptive": ["Adjust strategies based on feedback", "Promote flexible problem-solving", "Encourage innovation"],
+      "Empathetic": ["Actively listen to concerns", "Consider emotional impacts of decisions", "Show personal care for team members"],
+      "Decisive": ["Make timely decisions", "Clarify decision rationale", "Own the outcomes confidently"]
+    };
+
+    // You could refine this to be AI-generated later using formData traits
+    setCampaignData(initialCampaign);
+  }, [formData, navigate]);
 
   return (
-    <div className="d-flex align-items-center justify-content-center vh-100 w-100" 
-         style={{ backgroundImage: "url('/LEP Background 5.jpg')", backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat", minHeight: "100vh" }}>
-      <div className="card shadow-lg p-5 overflow-auto" style={{ maxWidth: "700px", width: "100%", maxHeight: "90vh" }}>
-        <div className="text-center mb-4">
-          <img src="/circle logo test.jpg" alt="LEP Logo" style={{ width: "150px", marginBottom: "15px" }} />
-          <h2 className="mb-3">Continuous Improvement Campaign</h2>
-          <p className="text-muted">Refine your personalized leadership focus statements below.</p>
-        </div>
+    <div className="container">
+      <h2 className="text-center mt-4">Continuous Improvement Campaign</h2>
 
-        {selectedTraits?.map((trait) => (
-          <div key={trait} className="mb-4">
-            <h4 className="fw-bold text-decoration-underline text-center">{trait}</h4>
+      {/* Email Input */}
+      <div className="mb-3">
+        <label className="form-label fw-bold">Your Email (for saving your campaign):</label>
+        <input
+          type="email"
+          className="form-control"
+          value={userEmail}
+          onChange={(e) => setUserEmail(e.target.value)}
+          required
+        />
+      </div>
 
-            <div className="d-flex flex-column gap-3">
-              {campaignData[trait]?.map((statement, index) => (
-                <textarea
-                  key={index}
-                  className="form-control"
-                  rows={3}
-                  value={statement}
-                  onChange={(e) => handleStatementChange(trait, index, e.target.value)}
-                />
-              ))}
-            </div>
-          </div>
-        ))}
-{/* Email Input */}
-<div className="mb-3">
-          <label className="form-label fw-bold">Your Email (for saving your campaign):</label>
-          <input
-            type="email"
-            className="form-control"
-            value={formData.userEmail || ""}
-            onChange={(e) => handleChange("userEmail", e.target.value)}
-            required
-          />
+      {/* Render Trait Sections */}
+      {Object.entries(campaignData).map(([trait, statements]) => (
+        <div key={trait} className="mb-4">
+          <h4 className="fw-bold">{trait}</h4>
+          {statements.map((statement, index) => (
+            <textarea
+              key={index}
+              className="form-control mb-2"
+              value={statement}
+              onChange={(e) => {
+                const updatedStatements = [...statements];
+                updatedStatements[index] = e.target.value;
+
+                setCampaignData((prev) => ({
+                  ...prev,
+                  [trait]: updatedStatements,
+                }));
+              }}
+            />
+          ))}
         </div>
-        <button className="btn btn-primary w-100 mt-3" onClick={handleSubmit}>Save My Campaign</button>
+      ))}
+
+      {/* Save Button */}
+      <div className="text-center mt-4">
+        <button className="btn btn-primary">Save My Campaign</button>
       </div>
     </div>
   );
