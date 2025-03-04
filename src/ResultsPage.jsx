@@ -48,12 +48,14 @@ const ResultsPage = () => {
 
             return (
               <div key={index} className="mb-3">
-                <div style={{ fontWeight: "bold", fontStyle: "italic", fontSize: "1.2rem", textAlign: "center", margin: "10px 0" }}>
+                <div style={{ fontStyle: "italic", fontSize: "1.2rem", textAlign: "center", margin: "10px 0" }}>
                   {trait.trim()}
                 </div>
                 <ul className="text-start mx-auto" style={{ maxWidth: "500px", paddingLeft: "20px" }}>
                   {descriptionParts.join(":").split("-").filter(Boolean).map((desc, idx) => (
-                    <li key={idx}>{desc.trim()}</li>
+                    <li key={idx} style={{ fontWeight: "normal", fontStyle: "normal" }}>
+                      {desc.trim()}
+                    </li>
                   ))}
                 </ul>
               </div>
@@ -63,7 +65,7 @@ const ResultsPage = () => {
       ) : (
         <div className="text-center" style={{ fontSize: "1rem" }}>
           {content.map((line, index) => (
-            <p key={index}>{line.replace(/^[-•]\s*/, "")}</p>
+            <p key={index} style={{ marginBottom: "5px" }}>{line.replace(/^[-•]\s*/, "")}</p>
           ))}
         </div>
       )}
