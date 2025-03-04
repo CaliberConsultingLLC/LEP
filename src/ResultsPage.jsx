@@ -23,7 +23,6 @@ const ResultsPage = () => {
     const startIndex = analysisLines.findIndex(line => 
       line.toLowerCase().includes(startKeyword.toLowerCase())
     );
-
     if (startIndex === -1) return [];
 
     const endIndex = endKeyword 
@@ -43,9 +42,7 @@ const ResultsPage = () => {
     let currentTrait = null;
     section.forEach(line => {
       if (line.startsWith("-")) {
-        if (currentTrait) {
-          traits.push(currentTrait);
-        }
+        if (currentTrait) traits.push(currentTrait);
         currentTrait = { trait: line.replace(/[-*]/g, "").trim(), descriptions: [] };
       } else if (currentTrait && line.trim()) {
         currentTrait.descriptions.push(line);
@@ -74,15 +71,13 @@ const ResultsPage = () => {
     <div className="mb-4">
       {renderSectionHeader(title)}
       {traits.map((trait, index) => (
-        <div key={index} className="mb-3 text-center">
-          <h5 className="fw-bold">{trait.trait}</h5>
-          <div className="text-start">
-            <ul className="list-unstyled">
-              {trait.descriptions.map((desc, idx) => (
-                <li key={idx} className="mb-1">{desc}</li>
-              ))}
-            </ul>
-          </div>
+        <div key={index} className="mb-4">
+          <h5 className="fw-bold text-center">{trait.trait}</h5>
+          <ul className="list-unstyled">
+            {trait.descriptions.map((desc, idx) => (
+              <li key={idx} className="mb-1">{desc}</li>
+            ))}
+          </ul>
         </div>
       ))}
     </div>
