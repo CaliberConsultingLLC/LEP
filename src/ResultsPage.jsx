@@ -34,9 +34,9 @@ const ResultsPage = () => {
   };
 
   // Extract sections directly as blocks of text
-  const summary = extractSection("Leadership Summary", "Leadership Traits").join(" ");
-  const strengths = extractSection("Leadership Traits", "Potential Blind Spots").join(" ");
-  const blindSpots = extractSection("Potential Blind Spots", "High-Impact Development Tip").join(" ");
+  const summary = extractSection("Leadership Summary").join(" ");
+  const strengths = extractSection("Leadership Traits").join(" ");
+  const blindSpots = extractSection("Potential Blind Spots").join(" ");
   const developmentTip = extractSection("High-Impact Development Tip").join(" ");
 
   const renderSection = (title, content) => (
