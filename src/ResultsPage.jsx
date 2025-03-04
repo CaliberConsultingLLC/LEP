@@ -49,6 +49,33 @@ const ResultsPage = () => {
       </div>
     ) : null
   );
+  
+  const handleBuildCampaign = async () => {
+    try {
+      const response = await fetch("/api/generate-campaign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          analysis, // Send the analysis text to the API
+          userEmail // Optional - remove if you don't have this yet
+        })
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Failed to generate campaign (status ${response.status})`);
+      }
+  
+      const { campaign } = await response.json();
+  
+      navigate("/campaign-builder", {
+        state: { campaign, userEmail } // Pass data to CampaignBuilder
+      });
+  
+    } catch (error) {
+      console.error("Error generating campaign:", error);
+      alert("Failed to generate your improvement campaign. Please try again.");
+    }
+  };
 
   return (
     <div
@@ -78,11 +105,8 @@ const ResultsPage = () => {
         </div>
 
         <div className="text-center mt-4">
-        <button 
-    className="btn btn-success" 
-    onClick={() => navigate("/campaign-builder", { state: { formData } })} 
->
-    Build My Continuous Improvement Campaign
+        <button className="btn btn-success" onClick={handleBuildCampaign}>
+  Build My Continuous Improvement Campaign
 </button>
         </div>
       </div>

@@ -19,10 +19,10 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 
-  const { userEmail, campaign } = req.body;
+  const { userEmail, campaignData } = req.body;
 
-  if (!userEmail || !campaign || !Array.isArray(campaign)) {
-    return res.status(400).json({ error: "Invalid data. Email and campaign required." });
+  if (!userEmail || !campaignData || typeof campaignData !== "object") {
+    return res.status(400).json({ error: "Invalid data. Email and campaignData are required." });
   }
 
   try {
@@ -30,7 +30,7 @@ export default async function handler(req, res) {
 
     await setDoc(userCampaignRef, {
       email: userEmail,
-      campaign,
+      campaign: campaignData,  // <-- Stores the trait -> statements mapping
       createdAt: new Date().toISOString()
     });
 
