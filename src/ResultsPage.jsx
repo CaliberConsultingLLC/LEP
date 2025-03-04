@@ -17,27 +17,30 @@ const ResultsPage = () => {
     );
   }
 
-  // Split the AI result into lines
+  // Split analysis into lines and clean up
   const analysisLines = analysis.split("\n").map(line => line.trim()).filter(line => line);
 
-  // Helper to split the analysis into sections
   const getSectionContent = (startKeyword, endKeyword) => {
-    const startIndex = analysisLines.findIndex(line => line.toLowerCase().includes(startKeyword.toLowerCase()));
+    const startIndex = analysisLines.findIndex(line =>
+      line.toLowerCase().includes(startKeyword.toLowerCase())
+    );
+
+    if (startIndex === -1) return [];
+
     const endIndex = endKeyword
       ? analysisLines.findIndex((line, idx) => idx > startIndex && line.toLowerCase().includes(endKeyword.toLowerCase()))
       : analysisLines.length;
 
-    if (startIndex === -1) return [];
-
     return analysisLines.slice(startIndex + 1, endIndex === -1 ? analysisLines.length : endIndex);
   };
 
-  const summary = getSectionContent("Characterize", "Blind Spots");
-  const blindSpots = getSectionContent("Blind Spots", "Development Tip");
-  const developmentTip = getSectionContent("Development Tip");
+  const summary = getSectionContent("Characterize", "Identify 2 leadership traits");
+  const leadershipTraits = getSectionContent("Identify 2 leadership traits", "Identify 3 likely blind spots");
+  const blindSpots = getSectionContent("Identify 3 likely blind spots", "Provide one high-impact");
+  const developmentTip = getSectionContent("Provide one high-impact");
 
   return (
-    <div 
+    <div
       className="d-flex align-items-center justify-content-center vh-100 w-100"
       style={{
         backgroundImage: "url('/LEP Background 5.jpg')",
@@ -59,7 +62,17 @@ const ResultsPage = () => {
           <h4 className="fw-bold">Leadership Summary</h4>
           <ul>
             {summary.map((line, index) => (
-              <li key={`summary-${index}`}>{line}</li>
+              <li key={`summary-${index}`}>{line.replace(/^\- /, "")}</li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Leadership Traits */}
+        <div className="mb-4">
+          <h4 className="fw-bold">Your Leadership Strengths</h4>
+          <ul>
+            {leadershipTraits.map((line, index) => (
+              <li key={`trait-${index}`}>{line.replace(/^\- /, "")}</li>
             ))}
           </ul>
         </div>
@@ -69,7 +82,7 @@ const ResultsPage = () => {
           <h4 className="fw-bold">Potential Blind Spots</h4>
           <ul>
             {blindSpots.map((line, index) => (
-              <li key={`blindspot-${index}`}>{line}</li>
+              <li key={`blindspot-${index}`}>{line.replace(/^\- /, "")}</li>
             ))}
           </ul>
         </div>
@@ -79,7 +92,7 @@ const ResultsPage = () => {
           <h4 className="fw-bold">High-Impact Development Tip</h4>
           <ul>
             {developmentTip.map((line, index) => (
-              <li key={`tip-${index}`}>{line}</li>
+              <li key={`tip-${index}`}>{line.replace(/^\- /, "")}</li>
             ))}
           </ul>
         </div>

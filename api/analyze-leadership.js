@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY, // Ensure this is set in Vercel
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
 export default async function handler(req, res) {
@@ -30,33 +30,47 @@ and a tone level of ${tone}
 
     const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
-      max_tokens: 200,
+      max_tokens: 500,
       messages: [
         {
           role: "system",
-          content: "You are a seasoned leadership coach. Your job is to analyze leadership responses and provide feedback in the user's preferred formality and empathy level. Please follow this exact format in your response, using clear section headers and bullet points."
+          content: `
+You are a seasoned leadership coach. Analyze the user's responses to uncover strengths, blind spots, and areas for improvement.
+Write directly to the user in a conversational tone, tailored to their preferred formality and empathy level.
+Format the output with clear section headers and bullet points. Avoid symbols like '**' or '[description]'.
+Example:
+Leadership Summary
+- You excel at...
+- Your team likely appreciates...
+
+Potential Blind Spots
+- You may struggle with...
+- When faced with conflict...
+
+High-Impact Development Tip
+- Consider focusing on...
+
+Use this format and style exactly.
+          `,
         },
         {
           role: "user",
           content: `${personaInstruction} Analyze the following leadership responses: ${JSON.stringify(req.body)}.
 
-1. Characterize this leader [Summary Line]
-2. Identify 2 leadership traits they are likely skilled in, with a brief description:
-- Leadership Trait 1: [description]
-- Leadership Trait 2: [description]
-3. Identify 3 likely blind spots, with brief descriptions:
-- Blind Spot 1: [description]
-- Blind Spot 2: [description]
-- Blind Spot 3: [description]
-4. Provide one high-impact leadership development tip:
-- Tip: [description]
-`
-        }
+Characterize this leader (Leadership Summary)
+Identify 2 leadership traits they are likely skilled in, with a brief description
+Identify 3 likely blind spots, with brief descriptions
+Provide one high-impact leadership development tip
+          `,
+        },
       ],
     });
 
     console.log("OpenAI Response:", response);
-    res.status(200).json({ analysis: response.choices[0].message.content.trim() });
+
+    res.status(200).json({
+      analysis: response.choices[0].message.content.trim()
+    });
 
   } catch (error) {
     console.error("OpenAI API Error:", error);
