@@ -37,31 +37,27 @@ and a tone level of ${tone}
           content: `
 You are a seasoned leadership coach. Analyze the user's responses to uncover strengths, blind spots, and areas for improvement.
 Write directly to the user in a conversational tone, tailored to their preferred formality and empathy level.
-Format the output with clear section headers and bullet points. Avoid symbols like '**' or '[description]'.
-Example:
+Use the following section titles in your response, and use bullet points for lists:
+
 Leadership Summary
-- You excel at...
-- Your team likely appreciates...
+- [Summary points about the user]
+
+Leadership Traits
+- [Trait 1 description]
+- [Trait 2 description]
 
 Potential Blind Spots
-- You may struggle with...
-- When faced with conflict...
+- [Blind Spot 1 description]
+- [Blind Spot 2 description]
+- [Blind Spot 3 description]
 
 High-Impact Development Tip
-- Consider focusing on...
-
-Use this format and style exactly.
+- [One key tip to focus on]
           `,
         },
         {
           role: "user",
-          content: `${personaInstruction} Analyze the following leadership responses: ${JSON.stringify(req.body)}.
-
-Characterize this leader (Leadership Summary)
-Identify 2 leadership traits they are likely skilled in, with a brief description
-Identify 3 likely blind spots, with brief descriptions
-Provide one high-impact leadership development tip
-          `,
+          content: `${personaInstruction} Analyze the following leadership responses: ${JSON.stringify(req.body)}`,
         },
       ],
     });

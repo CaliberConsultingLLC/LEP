@@ -17,30 +17,30 @@ const ResultsPage = () => {
     );
   }
 
-  // Split analysis into lines and clean up
+  // Split analysis into lines and remove empty lines
   const analysisLines = analysis.split("\n").map(line => line.trim()).filter(line => line);
 
-  const getSectionContent = (startKeyword, endKeyword) => {
-    const startIndex = analysisLines.findIndex(line =>
+  const extractSection = (startKeyword, endKeyword = null) => {
+    const startIndex = analysisLines.findIndex(line => 
       line.toLowerCase().includes(startKeyword.toLowerCase())
     );
 
     if (startIndex === -1) return [];
 
-    const endIndex = endKeyword
-      ? analysisLines.findIndex((line, idx) => idx > startIndex && line.toLowerCase().includes(endKeyword.toLowerCase()))
+    const endIndex = endKeyword 
+      ? analysisLines.findIndex((line, idx) => idx > startIndex && line.toLowerCase().includes(endKeyword.toLowerCase())) 
       : analysisLines.length;
 
     return analysisLines.slice(startIndex + 1, endIndex === -1 ? analysisLines.length : endIndex);
   };
 
-  const summary = getSectionContent("Characterize", "Identify 2 leadership traits");
-  const leadershipTraits = getSectionContent("Identify 2 leadership traits", "Identify 3 likely blind spots");
-  const blindSpots = getSectionContent("Identify 3 likely blind spots", "Provide one high-impact");
-  const developmentTip = getSectionContent("Provide one high-impact");
+  const summary = extractSection("Leadership Summary", "Leadership Traits");
+  const strengths = extractSection("Leadership Traits", "Potential Blind Spots");
+  const blindSpots = extractSection("Potential Blind Spots", "High-Impact Development Tip");
+  const developmentTip = extractSection("High-Impact Development Tip");
 
   return (
-    <div
+    <div 
       className="d-flex align-items-center justify-content-center vh-100 w-100"
       style={{
         backgroundImage: "url('/LEP Background 5.jpg')",
@@ -57,45 +57,23 @@ const ResultsPage = () => {
           <h2 className="mb-4">Your Leadership Analysis</h2>
         </div>
 
-        {/* Leadership Summary */}
-        <div className="mb-4">
-          <h4 className="fw-bold">Leadership Summary</h4>
-          <ul>
-            {summary.map((line, index) => (
-              <li key={`summary-${index}`}>{line.replace(/^\- /, "")}</li>
-            ))}
-          </ul>
-        </div>
+        {/* Section Helper */}
+        const renderSection = (title, content) => (
+          <div className="mb-4">
+            <h4 className="fw-bold">{title}</h4>
+            <ul>
+              {content.map((line, index) => (
+                <li key={index}>{line.replace(/^[-•]\s*/, "")}</li>
+              ))}
+            </ul>
+          </div>
+        );
 
-        {/* Leadership Traits */}
-        <div className="mb-4">
-          <h4 className="fw-bold">Your Leadership Strengths</h4>
-          <ul>
-            {leadershipTraits.map((line, index) => (
-              <li key={`trait-${index}`}>{line.replace(/^\- /, "")}</li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Blind Spots */}
-        <div className="mb-4">
-          <h4 className="fw-bold">Potential Blind Spots</h4>
-          <ul>
-            {blindSpots.map((line, index) => (
-              <li key={`blindspot-${index}`}>{line.replace(/^\- /, "")}</li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Development Tip */}
-        <div className="mb-4">
-          <h4 className="fw-bold">High-Impact Development Tip</h4>
-          <ul>
-            {developmentTip.map((line, index) => (
-              <li key={`tip-${index}`}>{line.replace(/^\- /, "")}</li>
-            ))}
-          </ul>
-        </div>
+        {/* Render Sections */}
+        {renderSection("Leadership Summary", summary)}
+        {renderSection("Your Leadership Strengths", strengths)}
+        {renderSection("Potential Blind Spots", blindSpots)}
+        {renderSection("High-Impact Development Tip", developmentTip)}
 
         <div className="text-center">
           <button className="btn btn-primary" onClick={() => navigate("/")}>Start Over</button>
