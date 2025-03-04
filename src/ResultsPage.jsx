@@ -5,6 +5,7 @@ const ResultsPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const analysis = location.state?.analysis;
+  const userEmail = location.state?.userEmail; // ✅ Capture email from state
 
   if (!analysis) {
     return (
@@ -50,7 +51,7 @@ const ResultsPage = () => {
   );
 
   return (
-    <div 
+    <div
       className="d-flex align-items-center justify-content-center vh-100 w-100"
       style={{
         backgroundImage: "url('/LEP Background 5.jpg')",
@@ -75,11 +76,15 @@ const ResultsPage = () => {
         <div className="text-center">
           <button className="btn btn-primary" onClick={() => navigate("/")}>Start Over</button>
         </div>
+
         <div className="text-center mt-4">
-  <button className="btn btn-success" onClick={() => navigate("/campaign-builder")}>
-    Build My Continuous Improvement Campaign
-  </button>
-</div>
+          <button 
+            className="btn btn-success" 
+            onClick={() => navigate("/campaign-builder", { state: { userEmail } })} // ✅ Pass email to Campaign Builder
+          >
+            Build My Continuous Improvement Campaign
+          </button>
+        </div>
       </div>
     </div>
   );

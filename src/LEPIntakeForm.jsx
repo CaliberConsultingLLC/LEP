@@ -236,7 +236,13 @@ const LEPIntakeForm = () => {
       const result = await response.json();
       console.log("✅ AI Analysis Result:", result);
 
-      navigate("/results", { state: { analysis: result.analysis } });
+      navigate("/results", { 
+        state: { 
+          analysis: result.analysis,
+          userEmail: formData.userEmail // ✅ Pass email to results page
+        }
+      });
+
     } catch (error) {
       console.error("❌ Error submitting form:", error);
       alert("There was an issue submitting the form.");
@@ -351,6 +357,18 @@ const LEPIntakeForm = () => {
           <img src="/circle logo test.jpg" alt="LEP Logo" style={{ width: "150px", marginBottom: "15px" }} />
         </div>
 
+        {/* Email Input */}
+        <div className="mb-3">
+          <label className="form-label fw-bold">Your Email (for saving your campaign):</label>
+          <input
+            type="email"
+            className="form-control"
+            value={formData.userEmail || ""}
+            onChange={(e) => handleChange("userEmail", e.target.value)}
+            required
+          />
+        </div>
+
         <h4 className="fw-bold mb-3">{sections[currentSection].title}</h4>
 
         {sections[currentSection].questions.map((q) => (
@@ -360,17 +378,9 @@ const LEPIntakeForm = () => {
           </div>
         ))}
 
-        <button onClick={handleNext} className="btn w-100 py-2 fw-bold rounded-pill shadow-sm" style={{ backgroundColor: "#212A37", color: "#FFFFFF" }}>
-          {currentSection < sections.length - 1 ? "Next Section" : "Submit"}
-        </button>
+        <button onClick={handleNext} className="btn btn-primary w-100">Next</button>
 
-        {devMode && (
-    <button 
-        className="btn btn-warning mt-3" 
-        onClick={fillWithTestData}>
-        Skip to Results (Dev)
-    </button>
-        )}
+        {devMode && <button className="btn btn-warning mt-3" onClick={fillWithTestData}>Skip to Results (Dev)</button>}
       </div>
     </div>
   );
