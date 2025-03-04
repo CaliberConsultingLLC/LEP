@@ -20,6 +20,7 @@ const ResultsPage = () => {
   // Split analysis into lines and remove empty lines
   const analysisLines = analysis.split("\n").map(line => line.trim()).filter(line => line);
 
+  // Extracts content between section headers
   const extractSection = (startKeyword, endKeyword = null) => {
     const startIndex = analysisLines.findIndex(line => 
       line.toLowerCase().includes(startKeyword.toLowerCase())
@@ -34,10 +35,23 @@ const ResultsPage = () => {
     return analysisLines.slice(startIndex + 1, endIndex === -1 ? analysisLines.length : endIndex);
   };
 
+  // Section Data Extraction
   const summary = extractSection("Leadership Summary", "Leadership Traits");
   const strengths = extractSection("Leadership Traits", "Potential Blind Spots");
   const blindSpots = extractSection("Potential Blind Spots", "High-Impact Development Tip");
   const developmentTip = extractSection("High-Impact Development Tip");
+
+  // Safely render sections
+  const renderSection = (sectionTitle, content) => (
+    <div className="mb-4">
+      <h4 className="fw-bold">{sectionTitle}</h4>
+      <ul>
+        {content.map((line, index) => (
+          <li key={index}>{line.replace(/^[-•]\s*/, "")}</li>
+        ))}
+      </ul>
+    </div>
+  );
 
   return (
     <div 
@@ -57,19 +71,6 @@ const ResultsPage = () => {
           <h2 className="mb-4">Your Leadership Analysis</h2>
         </div>
 
-        {/* Section Helper */}
-        const renderSection = (title, content) => (
-          <div className="mb-4">
-            <h4 className="fw-bold">{title}</h4>
-            <ul>
-              {content.map((line, index) => (
-                <li key={index}>{line.replace(/^[-•]\s*/, "")}</li>
-              ))}
-            </ul>
-          </div>
-        );
-
-        {/* Render Sections */}
         {renderSection("Leadership Summary", summary)}
         {renderSection("Your Leadership Strengths", strengths)}
         {renderSection("Potential Blind Spots", blindSpots)}
