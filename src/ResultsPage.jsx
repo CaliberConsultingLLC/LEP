@@ -17,33 +17,36 @@ const ResultsPage = () => {
     );
   }
 
+  // Clean and split the analysis into usable lines
   const analysisLines = analysis.split("\n").map(line => line.trim()).filter(line => line);
 
+  // Helper function to extract clean text block between headers
   const extractSection = (startKeyword, endKeyword = null) => {
     const startIndex = analysisLines.findIndex(line =>
       line.toLowerCase().includes(startKeyword.toLowerCase())
     );
 
-    if (startIndex === -1) return [];
+    if (startIndex === -1) return "";
 
     const endIndex = endKeyword
       ? analysisLines.findIndex((line, idx) => idx > startIndex && line.toLowerCase().includes(endKeyword.toLowerCase()))
       : analysisLines.length;
 
-    return analysisLines.slice(startIndex + 1, endIndex === -1 ? analysisLines.length : endIndex);
+    return analysisLines.slice(startIndex + 1, endIndex === -1 ? analysisLines.length : endIndex).join(" ");
   };
 
-  // Extract sections directly as blocks of text
-  const summary = extractSection("Leadership Summary").join(" ");
-  const strengths = extractSection("Leadership Traits").join(" ");
-  const blindSpots = extractSection("Potential Blind Spots").join(" ");
-  const developmentTip = extractSection("High-Impact Development Tip").join(" ");
+  const summary = extractSection("Leadership Summary", "Your Leadership Strengths");
+  const strengths = extractSection("Your Leadership Strengths", "Potential Blind Spots");
+  const blindSpots = extractSection("Potential Blind Spots", "High-Impact Development Tip");
+  const developmentTip = extractSection("High-Impact Development Tip");
 
   const renderSection = (title, content) => (
-    <div className="mb-4">
-      <h4 className="fw-bold text-decoration-underline text-center">{title}</h4>
-      <p className="text-center">{content}</p>
-    </div>
+    content ? (
+      <div className="mb-4">
+        <h4 className="fw-bold text-decoration-underline text-center">{title}</h4>
+        <p className="text-center">{content}</p>
+      </div>
+    ) : null
   );
 
   return (
