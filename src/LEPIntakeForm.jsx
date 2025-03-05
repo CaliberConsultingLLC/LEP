@@ -239,8 +239,8 @@ const LEPIntakeForm = () => {
       navigate("/results", { 
         state: { 
             analysis: result.analysis,
-            formData // ✅ Pass formData so it's available for campaign builder later
-        } 
+            campaign: result.campaign  // ✅ Pass both
+        }
     });
   
 

@@ -65,7 +65,7 @@ const ResultsPage = () => {
         throw new Error(`Failed to generate campaign (status ${response.status})`);
       }
   
-      const { campaign } = await response.json();
+      const { campaign } = location.state || {};
   
       navigate("/campaign-builder", {
         state: { campaign, userEmail } // Pass data to CampaignBuilder
