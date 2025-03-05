@@ -56,8 +56,7 @@ const ResultsPage = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          analysis, // Send the analysis text to the API
-          userEmail // Optional - remove if you don't have this yet
+          analysis
         })
       });
   
