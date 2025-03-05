@@ -1,7 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, doc, setDoc } from "firebase/firestore";
 
-// Firebase config - make sure these match your Firebase project
 const firebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY,
   authDomain: process.env.FIREBASE_AUTH_DOMAIN,
@@ -19,22 +18,28 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 
-  const { userEmail, campaignData } = req.body;
+  const { userEmail, userName, company, industry, jobTitle, campaignData } = req.body;
 
   if (!userEmail || !campaignData || typeof campaignData !== "object") {
     return res.status(400).json({ error: "Invalid data. Email and campaignData are required." });
   }
 
   try {
-    const userCampaignRef = doc(db, "campaigns", userEmail);
+    const timestamp = new Date().toISOString();
+    const userCampaignRef = doc(db, "campaigns", `${userEmail}-${timestamp}`);
 
     await setDoc(userCampaignRef, {
       email: userEmail,
-      campaign: campaignData,  // <-- Stores the trait -> statements mapping
-      createdAt: new Date().toISOString()
+      name: userName,
+      company,
+      industry,
+      jobTitle,
+      campaign: campaignData,
+      createdAt: timestamp,
     });
 
     res.status(200).json({ message: "Campaign saved successfully." });
+
   } catch (error) {
     console.error("Error saving campaign:", error);
     res.status(500).json({ error: "Failed to save campaign", details: error.message });

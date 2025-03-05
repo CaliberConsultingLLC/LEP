@@ -9,7 +9,11 @@ const SaveCampaignPage = () => {
   const { campaignData } = location.state || {};
 
   const [userEmail, setUserEmail] = useState("");
-  const [userName, setUserName] = useState(""); // Optional if you want
+  const [userName, setUserName] = useState(""); 
+  const [company, setCompany] = useState("");
+  const [industry, setIndustry] = useState("");
+  const [jobTitle, setJobTitle] = useState("");
+
   const [saving, setSaving] = useState(false);
 
   const handleSave = async () => {
@@ -26,7 +30,10 @@ const SaveCampaignPage = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userEmail,
-          userName, // Optional, can remove if not needed
+          userName,
+          company,
+          industry,
+          jobTitle,
           campaignData
         })
       });
@@ -73,6 +80,39 @@ const SaveCampaignPage = () => {
             value={userName}
             onChange={(e) => setUserName(e.target.value)}
             placeholder="John Doe"
+          />
+        </div>
+
+        <div className="mb-3">
+          <label className="form-label fw-bold">Company</label>
+          <input
+            type="text"
+            className="form-control"
+            value={company}
+            onChange={(e) => setCompany(e.target.value)}
+            placeholder="Your Company Name"
+          />
+        </div>
+
+        <div className="mb-3">
+          <label className="form-label fw-bold">Industry</label>
+          <input
+            type="text"
+            className="form-control"
+            value={industry}
+            onChange={(e) => setIndustry(e.target.value)}
+            placeholder="Industry (e.g., Tech, Healthcare)"
+          />
+        </div>
+
+        <div className="mb-3">
+          <label className="form-label fw-bold">Job Title</label>
+          <input
+            type="text"
+            className="form-control"
+            value={jobTitle}
+            onChange={(e) => setJobTitle(e.target.value)}
+            placeholder="Your Job Title"
           />
         </div>
 
