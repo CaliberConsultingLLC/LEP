@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 const ResultsPage = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { analysis, formData } = location.state || {}; // ✅ Only these two now
+    const { analysis, campaign, formData } = location.state || {}; // ✅ Expect all three
   
 
   if (!analysis) {
@@ -49,30 +49,6 @@ const ResultsPage = () => {
       </div>
     ) : null
   );
-  
-  const handleBuildCampaign = async () => {
-    try {
-      const response = await fetch("/api/analyze-leadership", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
-    });
-  
-      if (!response.ok) {
-        throw new Error(`Failed to generate campaign (status ${response.status})`);
-      }
-  
-      const { campaign } = location.state || {};
-  
-      navigate("/campaign-builder", {
-        state: { campaign, userEmail } // Pass data to CampaignBuilder
-      });
-  
-    } catch (error) {
-      console.error("Error generating campaign:", error);
-      alert("Failed to generate your improvement campaign. Please try again.");
-    }
-  };
 
   return (
     <div
@@ -97,15 +73,11 @@ const ResultsPage = () => {
         {renderSection("Potential Blind Spots", blindSpots)}
         {renderSection("High-Impact Development Tip", developmentTip)}
 
-        <div className="text-center">
-          <button className="btn btn-primary" onClick={() => navigate("/")}>Start Over</button>
-        </div>
-
         <div className="text-center mt-4">
-        <button className="btn btn-success" onClick={handleBuildCampaign}>
-  Build My Continuous Improvement Campaign
-</button>
-        </div>
+    <button className="btn btn-success" onClick={() => navigate("/campaign-builder", { state: { campaign } })}>
+        Build My Continuous Improvement Campaign
+    </button>
+</div>
       </div>
     </div>
   );
