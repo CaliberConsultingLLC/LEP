@@ -26,7 +26,7 @@ and a tone level of ${tone}
 `;
 
   try {
-    console.log("Calling OpenAI API for Analysis...");
+    console.log("Calling OpenAI API for leadership analysis...");
 
     const analysisResponse = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
@@ -69,20 +69,19 @@ NO asterisks.
 NO dashes.
 NO markdown symbols.
 ONLY clean section headers, trait names, and clean descriptive text underneath each.
-        `,
+`
         },
         {
           role: "user",
-          content: `${personaInstruction} Analyze the following leadership responses: ${JSON.stringify(req.body)}`,
-        },
-      ],
+          content: `${personaInstruction} Analyze the following leadership responses: ${JSON.stringify(req.body)}`
+        }
+      ]
     });
 
     const analysis = analysisResponse.choices[0].message.content.trim();
 
-    console.log("Leadership Analysis Generated. Now generating campaign...");
+    console.log("Calling OpenAI API for continuous improvement campaign...");
 
-    // 🔥 Campaign Generation (IN THE SAME REQUEST)
     const campaignPrompt = `
 You are an expert leadership coach and organizational psychologist. Your task is to generate a personalized leadership continuous improvement campaign for the leader based on the following leadership analysis:
 
@@ -116,8 +115,6 @@ Do this for all 5 traits. Keep your language professional and clear.
     const campaignText = campaignResponse.choices[0].message.content.trim();
     const campaign = parseCampaignText(campaignText);
 
-    console.log("Campaign Generated Successfully");
-
     res.status(200).json({
       analysis,
       campaign,
@@ -125,11 +122,10 @@ Do this for all 5 traits. Keep your language professional and clear.
 
   } catch (error) {
     console.error("OpenAI API Error:", error);
-    res.status(500).json({ error: "AI Analysis & Campaign Generation Failed", details: error.message });
+    res.status(500).json({ error: "AI Analysis and Campaign Generation Failed", details: error.message });
   }
 }
 
-// 🔧 Helper function to parse the campaign text into structured objects
 function parseCampaignText(text) {
   const lines = text.split("\n").map(line => line.trim()).filter(line => line);
 
