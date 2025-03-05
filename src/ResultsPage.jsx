@@ -52,13 +52,11 @@ const ResultsPage = () => {
   
   const handleBuildCampaign = async () => {
     try {
-      const response = await fetch("/api/generate-campaign", {
+      const response = await fetch("/api/analyze-leadership", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          analysis
-        })
-      });
+        body: JSON.stringify(formData)
+    });
   
       if (!response.ok) {
         throw new Error(`Failed to generate campaign (status ${response.status})`);
