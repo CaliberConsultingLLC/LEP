@@ -4,6 +4,8 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY, // Ensure this is in Vercel or .env
 });
 
+console.log("📥 Incoming request method:", req.method);
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method Not Allowed" });

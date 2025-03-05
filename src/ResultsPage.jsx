@@ -52,24 +52,17 @@ const ResultsPage = () => {
     const handleBuildCampaign = async () => {
         try {
             const response = await fetch("/api/generate-campaign", {
-                method: "POST",
+                method: "POST",  // 🔥 This is required
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    analysis // ✅ Only sending analysis
-                })
+                body: JSON.stringify({ analysis })  // 🔥 Sending the analysis
             });
-
+    
             if (!response.ok) {
                 throw new Error(`Failed to generate campaign (status ${response.status})`);
             }
-
-            const { campaign } = await response.json(); // ✅ Only expecting campaign, no email
-
-            // ✅ Navigate to campaign builder page with campaign data only
-            navigate("/campaign-builder", {
-                state: { campaign }
-            });
-
+    
+            const { campaign } = await response.json();
+            navigate("/campaign-builder", { state: { campaign } });
         } catch (error) {
             console.error("❌ Error generating campaign:", error);
             alert("There was an issue generating your campaign. Please try again.");
