@@ -4,13 +4,13 @@ import { useLocation, useNavigate } from "react-router-dom";
 const CampaignBuilder = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { campaign, userEmail } = location.state || {}; // <-- Updated
+  const { campaign } = location.state || {};
 
   const [campaignData, setCampaignData] = useState(() => {
     const initialData = {};
     if (campaign) {
       campaign.forEach(trait => {
-        initialData[trait.trait] = [...trait.statements]; // Default to AI suggestions
+        initialData[trait.trait] = [...trait.statements]; // Pre-fill with AI-generated statements
       });
     }
     return initialData;
@@ -24,27 +24,9 @@ const CampaignBuilder = () => {
     });
   };
 
-  const handleSaveCampaign = async () => {
-    try {
-      const response = await fetch("/api/save-campaign", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userEmail,
-          campaignData
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to save campaign (status ${response.status})`);
-      }
-
-      alert("Your campaign has been saved!");
-      navigate("/"); // Back to home after save
-    } catch (error) {
-      console.error("Error saving campaign:", error);
-      alert("Failed to save your campaign. Please try again.");
-    }
+  const handleProceedToSave = () => {
+    // ✅ Navigate to the SaveCampaignPage and pass campaignData for final save step
+    navigate("/save-campaign", { state: { campaignData } });
   };
 
   return (
@@ -60,7 +42,7 @@ const CampaignBuilder = () => {
         <div className="text-center mb-4">
           <img src="/circle logo test.jpg" alt="LEP Logo" style={{ width: "150px", marginBottom: "15px" }} />
           <h2 className="mb-3">Continuous Improvement Campaign</h2>
-          <p>Refine your personalized leadership focus statements below.</p>
+          <p>Review and customize your personalized leadership focus statements.</p>
         </div>
 
         {campaign && campaign.map(({ trait }, traitIndex) => (
@@ -78,9 +60,11 @@ const CampaignBuilder = () => {
           </div>
         ))}
 
-        <div className="text-center">
-          <button className="btn btn-primary" onClick={handleSaveCampaign}>Save My Campaign</button>
-        </div>
+<div className="text-center">
+    <button className="btn btn-primary" onClick={handleProceedToSave}>
+        Proceed to Save Campaign
+    </button>
+</div>
       </div>
     </div>
   );
