@@ -4,16 +4,13 @@ import { useLocation, useNavigate } from "react-router-dom";
 const SaveCampaignPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-
-  // Expecting campaignData to be passed from CampaignBuilder
   const { campaignData } = location.state || {};
 
   const [userEmail, setUserEmail] = useState("");
-  const [userName, setUserName] = useState(""); 
+  const [userName, setUserName] = useState("");
   const [company, setCompany] = useState("");
   const [industry, setIndustry] = useState("");
   const [jobTitle, setJobTitle] = useState("");
-
   const [saving, setSaving] = useState(false);
 
   const handleSave = async () => {
@@ -25,7 +22,8 @@ const SaveCampaignPage = () => {
     setSaving(true);
 
     try {
-      const response = await fetch("/api/save-campaign", {
+      // Save campaign
+      const saveResponse = await fetch("/api/save-campaign", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -38,16 +36,37 @@ const SaveCampaignPage = () => {
         })
       });
 
-      if (!response.ok) {
-        throw new Error(`Failed to save campaign (status ${response.status})`);
+      if (!saveResponse.ok) {
+        throw new Error(`Failed to save campaign (status ${saveResponse.status})`);
       }
 
-      alert("✅ Your campaign has been saved!");
-      navigate("/"); // Back to home or results page — adjust if needed
+      // Send email with PDF
+      const campaignLink = `https://lep.caliberconsultingllc.org/campaign/${campaignData?.id || 'default'}`; // Adjust based on campaign ID
+      const password = Math.random().toString(36).slice(-8); // Generate random password
+      const eventDate = new Date().toISOString().split('T')[0]; // Current date
+
+      const emailResponse = await fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          to: userEmail,
+          subject: `Your ${userName ? userName + "'s " : ''}LEP Campaign`,
+          campaignLink,
+          password,
+          eventDate
+        })
+      });
+
+      if (!emailResponse.ok) {
+        throw new Error(`Failed to send email (status ${emailResponse.status})`);
+      }
+
+      alert("✅ Your campaign has been saved and emailed!");
+      navigate("/");
 
     } catch (error) {
-      console.error("❌ Error saving campaign:", error);
-      alert("There was an error saving your campaign. Please try again.");
+      console.error("❌ Error:", error);
+      alert("There was an error saving or emailing your campaign. Please try again.");
     } finally {
       setSaving(false);
     }
@@ -69,7 +88,7 @@ const SaveCampaignPage = () => {
         <div className="text-center mb-4">
           <img src="/circle logo test.jpg" alt="LEP Logo" style={{ width: "150px", marginBottom: "15px" }} />
           <h2 className="mb-3">Save Your Campaign</h2>
-          <p>Enter your details below to save your personalized leadership campaign.</p>
+          <p>Enter your details below to save and receive your personalized leadership campaign.</p>
         </div>
 
         <div className="mb-3">
@@ -130,7 +149,7 @@ const SaveCampaignPage = () => {
 
         <div className="text-center">
           <button className="btn btn-success" onClick={handleSave} disabled={saving}>
-            {saving ? "Saving..." : "Save My Campaign"}
+            {saving ? "Saving..." : "Save and Email My Campaign"}
           </button>
         </div>
       </div>
